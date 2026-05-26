@@ -1,0 +1,141 @@
+-- Création et sélection de la base de données
+CREATE DATABASE IF NOT EXISTS campusmelody 
+
+CHARACTER SET utf8mb4 
+COLLATE utf8mb4_unicode_ci;
+
+USE campus_melody;
+
+DROP TABLE IF EXISTS inscription;
+DROP TABLE IF EXISTS notification;
+DROP TABLE IF EXISTS reservation;
+DROP TABLE IF EXISTS evenement;
+DROP TABLE IF EXISTS ressource;
+DROP TABLE IF EXISTS utilisateur;
+
+
+-- Table : UTILISATEUR
+CREATE TABLE utilisateur (
+    id_utilisateur INT AUTO_INCREMENT,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL,
+    mot_de_passe VARCHAR(255) NOT NULL,
+    role VARCHAR(50) NOT NULL, -- 'Student', 'Organizer' ou 'Admin'
+    est_membre_asso BOOLEAN DEFAULT FALSE,
+    date_inscription TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_utilisateur PRIMARY KEY (id_utilisateur),
+    CONSTRAINT uq_utilisateur_email UNIQUE (email)
+);
+
+-- Table : RESSOURCE (Salles et Matériels)
+CREATE TABLE ressource (
+    id_resource INT AUTO_INCREMENT,
+    nom VARCHAR(100) NOT NULL,
+    description TEXT,
+    type_ressource VARCHAR(50) NOT NULL, -- 'Studio', 'Instrument', 'Matériel' ou 'Salle'
+    quantite_totale INT NOT NULL DEFAULT 1,
+    statut_actuel VARCHAR(50) NOT NULL DEFAULT 'Disponible', -- 'Disponible' ou 'Indisponible'
+    CONSTRAINT pk_ressource PRIMARY KEY (id_resource)
+);
+
+-- Table : EVENEMENT 
+CREATE TABLE evenement (
+    id_evenement INT AUTO_INCREMENT,
+    titre VARCHAR(150) NOT NULL,
+    description TEXT,
+    image_url VARCHAR(255),
+    date_debut DATETIME NOT NULL,
+    date_fin DATETIME NOT NULL,
+    lieu VARCHAR(100) NOT NULL,
+    capacite_max INT NOT NULL,
+    type_evenement VARCHAR(50) NOT NULL, 
+    statut_validation VARCHAR(50) NOT NULL DEFAULT 'En attente', -- 'En attente', 'Validé' ou 'Refusé'
+    
+    -- Clé étrangère : Organisateur de l'événement 
+    id_organisateur INT NOT NULL,
+    
+    -- Clés de validation - nulle tant que non validé
+    id_validateur INT NULL,
+    date_decision DATETIME NULL,
+    commentaire_validation TEXT NULL,
+    
+    CONSTRAINT pk_evenement PRIMARY KEY (id_evenement),
+    
+    CONSTRAINT fk_evenement_organisateur 
+        FOREIGN KEY (id_organisateur) REFERENCES utilisateur(id_utilisateur)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+        
+    CONSTRAINT fk_evenement_validateur 
+        FOREIGN KEY (id_validateur) REFERENCES utilisateur(id_utilisateur)
+        ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+-- Table : RESERVATION 
+CREATE TABLE reservation (
+    id_reservation INT AUTO_INCREMENT,
+    date_debut DATETIME NOT NULL,
+    date_fin DATETIME NOT NULL,
+    date_retour DATETIME NULL, -- Nulle tant que le matériel n'est pas restitué
+    statut VARCHAR(50) NOT NULL DEFAULT 'En attente', -- 'En attente', 'Approuvée', 'Refusée' ou 'Terminée'
+    
+    -- Clés étrangères 
+    id_utilisateur INT NOT NULL,
+    id_ressource INT NOT NULL,
+    
+    -- Clés de validation - nulles tant que non validé
+    id_validateur INT NULL,
+    date_decision DATETIME NULL,
+    commentaire_validation TEXT NULL,
+    
+    CONSTRAINT pk_reservation PRIMARY KEY (id_reservation),
+    
+    CONSTRAINT fk_reservation_utilisateur 
+        FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+        
+    CONSTRAINT fk_reservation_ressource 
+        FOREIGN KEY (id_ressource) REFERENCES ressource(id_resource)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+        
+    CONSTRAINT fk_reservation_validateur 
+        FOREIGN KEY (id_validateur) REFERENCES utilisateur(id_utilisateur)
+        ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+-- Table : NOTIFICATION
+CREATE TABLE notification (
+    id_notification INT AUTO_INCREMENT,
+    titre VARCHAR(100) NOT NULL,
+    message TEXT NOT NULL,
+    type_notification VARCHAR(50) NOT NULL, 
+    statut_lecture BOOLEAN DEFAULT FALSE,
+    date_envoi TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Clé étrangère 
+    id_destinataire INT NOT NULL,
+    
+    CONSTRAINT pk_notification PRIMARY KEY (id_notification),
+    
+    CONSTRAINT fk_notification_destinataire 
+        FOREIGN KEY (id_destinataire) REFERENCES utilisateur(id_utilisateur)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Table associative : INSCRIPTION (Gère la relation entre Utilisateur et Evénement)
+CREATE TABLE inscription (
+    id_utilisateur INT NOT NULL,
+    id_evenement INT NOT NULL,
+    date_inscription TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    statut_inscription VARCHAR(50) NOT NULL DEFAULT 'Confirmé', -- 'Confirmé', 'Sur liste d'attente' ou 'Annulé'
+    
+    CONSTRAINT pk_inscription PRIMARY KEY (id_utilisateur, id_evenement),
+    
+    CONSTRAINT fk_inscription_utilisateur 
+        FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+        
+    CONSTRAINT fk_inscription_evenement 
+        FOREIGN KEY (id_evenement) REFERENCES evenement(id_evenement)
+        ON DELETE CASCADE ON UPDATE CASCADE
+);
