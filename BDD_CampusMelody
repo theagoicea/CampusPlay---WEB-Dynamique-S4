@@ -1,9 +1,5 @@
 -- Création et sélection de la base de données
 CREATE DATABASE IF NOT EXISTS campusmelody 
-
-CHARACTER SET utf8mb4 
-COLLATE utf8mb4_unicode_ci;
-
 USE campus_melody;
 
 DROP TABLE IF EXISTS inscription;
