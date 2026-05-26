@@ -1,5 +1,6 @@
 -- Création et sélection de la base de données
-CREATE DATABASE IF NOT EXISTS campusmelody 
+DROP DATABASE IF EXISTS campusmelody;
+CREATE DATABASE campusmelody;
 USE campusmelody;
 
 DROP TABLE IF EXISTS inscription;
