@@ -18,8 +18,9 @@ CREATE TABLE utilisateur (
     prenom VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL,
     mot_de_passe VARCHAR(255) NOT NULL,
-    role VARCHAR(50) NOT NULL, -- 'Student', 'Organizer' ou 'Admin'
+    role VARCHAR(50) NOT NULL DEFAULT 'Visiteur', -- 'Visiteur', 'Membre', 'Organisateur' ou 'Admin'
     est_membre_asso BOOLEAN DEFAULT FALSE,
+    statut_adhesion VARCHAR(50) DEFAULT 'Non membre', -- 'Non membre', 'En attente', 'Validé'
     date_inscription TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT pk_utilisateur PRIMARY KEY (id_utilisateur),
     CONSTRAINT uq_utilisateur_email UNIQUE (email)
@@ -47,6 +48,8 @@ CREATE TABLE evenement (
     lieu VARCHAR(100) NOT NULL,
     capacite_max INT NOT NULL,
     type_evenement VARCHAR(50) NOT NULL, 
+	est_reserve_membres BOOLEAN DEFAULT FALSE,
+	besoin_validation_inscription BOOLEAN DEFAULT FALSE, -- TRUE = Manuel, FALSE = Automatique
     statut_validation VARCHAR(50) NOT NULL DEFAULT 'En attente', -- 'En attente', 'Validé' ou 'Refusé'
     
     -- Clé étrangère : Organisateur de l'événement 
@@ -124,9 +127,14 @@ CREATE TABLE inscription (
     id_utilisateur INT NOT NULL,
     id_evenement INT NOT NULL,
     date_inscription TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    statut_inscription VARCHAR(50) NOT NULL DEFAULT 'Confirmé', -- 'Confirmé', 'Sur liste d'attente' ou 'Annulé'
+    statut_inscription VARCHAR(50) NOT NULL DEFAULT 'En attente', -- 'En attente', 'Confirmé' ou 'Annulé'
+    id_validateur INT NULL,
+    date_decision DATETIME NULL,
+    commentaire_validation TEXT NULL,
     
     CONSTRAINT pk_inscription PRIMARY KEY (id_utilisateur, id_evenement),
+	
+	CONSTRAINT fk_inscription_validateur FOREIGN KEY (id_validateur) REFERENCES utilisateur(id_utilisateur) ON DELETE SET NULL ON UPDATE CASCADE,
     
     CONSTRAINT fk_inscription_utilisateur 
         FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur)
@@ -136,3 +144,31 @@ CREATE TABLE inscription (
         FOREIGN KEY (id_evenement) REFERENCES evenement(id_evenement)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+-- Table : FORUM
+CREATE TABLE forum (
+    id_forum INT AUTO_INCREMENT,
+    titre VARCHAR(150) NOT NULL,
+    date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    est_ferme BOOLEAN DEFAULT FALSE,
+    id_createur INT NOT NULL,
+    id_evenement_associe INT NULL, -- Permet d'avoir un fil de discussion lié à un événement
+    CONSTRAINT pk_forum PRIMARY KEY (id_forum),
+    CONSTRAINT fk_forum_createur FOREIGN KEY (id_createur) REFERENCES utilisateur(id_utilisateur) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_forum_evenement FOREIGN KEY (id_evenement_associe) REFERENCES evenement(id_evenement) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+-- Table : MESSAGE_FORUM
+CREATE TABLE message_forum (
+    id_message INT AUTO_INCREMENT,
+    contenu TEXT NOT NULL,
+    date_publication TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    signale BOOLEAN DEFAULT FALSE,
+    id_auteur INT NOT NULL,
+    id_forum INT NOT NULL,
+    CONSTRAINT pk_message_forum PRIMARY KEY (id_message),
+    CONSTRAINT fk_message_auteur FOREIGN KEY (id_auteur) REFERENCES utilisateur(id_utilisateur) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_message_forum FOREIGN KEY (id_forum) REFERENCES forum(id_forum) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
