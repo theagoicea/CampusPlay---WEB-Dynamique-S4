@@ -1,0 +1,272 @@
+<?php
+session_start();
+
+// Redirection si non connecté
+if (!isset($_SESSION['user_id'])) {
+    header("Location: Authentification.php");
+    exit();
+}
+
+// Connexion à la base de données
+$host = 'localhost';
+$dbname = 'campusmelody';
+$username = 'root';
+$password = 'root'; // ou '' 
+
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Erreur de connexion : " . $e->getMessage());
+}
+
+$user_id = $_SESSION['user_id'];
+
+// 1. Récupérer les infos de l'utilisateur
+$stmtUser = $pdo->prepare("SELECT * FROM utilisateur WHERE id_utilisateur = ?");
+$stmtUser->execute([$user_id]);
+$user = $stmtUser->fetch();
+
+// Initiales pour la photo de profil (ex: "Julien Martin" -> "JM")
+$initiales = strtoupper(substr($user['prenom'], 0, 1) . substr($user['nom'], 0, 1));
+
+// 2. Récupérer les réservations à venir
+$stmtResa = $pdo->prepare("
+    SELECT r.date_debut, r.date_fin, r.statut, res.nom, res.type_ressource 
+    FROM reservation r 
+    JOIN ressource res ON r.id_ressource = res.id_resource 
+    WHERE r.id_utilisateur = ? AND r.date_debut >= NOW() 
+    ORDER BY r.date_debut ASC
+");
+$stmtResa->execute([$user_id]);
+$reservations = $stmtResa->fetchAll();
+
+// 3. Récupérer les événements à venir (inscriptions)
+$stmtEvents = $pdo->prepare("
+    SELECT e.titre, e.date_debut, e.type_evenement, i.statut_inscription 
+    FROM inscription i 
+    JOIN evenement e ON i.id_evenement = e.id_evenement 
+    WHERE i.id_utilisateur = ? AND e.date_debut >= NOW() 
+    ORDER BY e.date_debut ASC
+");
+$stmtEvents->execute([$user_id]);
+$myEvents = $stmtEvents->fetchAll();
+
+// 4. Récupérer les événements passés
+$stmtPastEvents = $pdo->prepare("
+    SELECT e.titre, e.date_debut, e.type_evenement, i.statut_inscription 
+    FROM inscription i 
+    JOIN evenement e ON i.id_evenement = e.id_evenement 
+    WHERE i.id_utilisateur = ? AND e.date_debut < NOW() 
+    ORDER BY e.date_debut DESC
+");
+$stmtPastEvents->execute([$user_id]);
+$pastEvents = $stmtPastEvents->fetchAll();
+
+// Fonction pour associer un emoji au type d'événement ou de ressource
+function getIcon($type) {
+    $icons = [
+        'concert' => '🎸', 'jam' => '🎷', 'open-mic' => '🎤', 'dj-night' => '💿', 'workshop' => '🎧',
+        'Studio' => '🎹', 'Instrument' => '🥁', 'Matériel' => '🔌', 'Salle' => '🏠'
+    ];
+    return $icons[$type] ?? '📅';
+}
+?>
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Campus Melody - Mon Profil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen font-sans flex">
+
+    <!-- BARRE LATÉRALE (Sidebar) - Identique aux autres pages -->
+    <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col sticky top-0 h-screen overflow-y-auto">
+        <div class="px-6 py-8 border-b border-[#27272A]">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
+                <h1 class="text-sm font-bold text-[#F5F5F7] leading-tight">Campus Melody</h1>
+            </div>
+        </div>
+        
+        <nav class="flex-1 px-3 py-4">
+            <p class="text-[10px] font-semibold text-[#A1A1AA] uppercase tracking-widest px-3 mb-3">Pages</p>
+            <div class="space-y-1">
+                <a href="Accueil.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]"><i data-lucide="home" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Accueil</span></a>
+                <a href="catalogue.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]"><i data-lucide="calendar" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Catalogue</span></a>
+                <a href="reservations.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]"><i data-lucide="settings" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Réservations</span></a>
+                <a href="evenements.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]"><i data-lucide="music" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Evénements</span></a>
+                
+                <a href="profil.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left bg-[#A78BFA] text-[#0B0B0F] font-bold">
+                    <i data-lucide="user" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Profil</span>
+                </a>
+                
+                <a href="notifications.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]"><i data-lucide="bell" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Notifications</span></a>
+                <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 'Admin'): ?>
+                    <a href="admin.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]"><i data-lucide="layout-grid" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Tableau de bord Admin</span></a>
+                <?php endif; ?>
+                <a href="forums.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]"><i data-lucide="message-square" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Forums</span></a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- CONTENU PRINCIPAL -->
+    <main class="flex-1 overflow-y-auto px-8 py-10">
+        
+        <div class="bg-[#18181B] rounded-3xl p-8 border border-[#27272A] max-w-4xl mx-auto">
+            
+            <!-- TopBar -->
+            <div class="flex justify-between items-center mb-8 border-b border-[#27272A] pb-4">
+                <div>
+                    <h3 class="text-2xl font-bold tracking-tight">Mon Profil</h3>
+                    <p class="text-sm text-[#A1A1AA]">Gérez vos informations et suivez vos activités</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <a href="notifications.php" class="w-9 h-9 bg-[#0B0B0F] border border-[#27272A] rounded-xl flex items-center justify-center text-sm cursor-pointer hover:bg-[#27272A] transition">🔔</a>
+                </div>
+            </div>
+            
+            <div class="grid lg:grid-cols-3 gap-6">
+                <!-- Carte Profil (Gauche) -->
+                <div class="bg-[#0B0B0F] border border-[#27272A] rounded-2xl p-6 flex flex-col items-center text-center space-y-4">
+                    <label class="relative group cursor-pointer">
+                        <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-[#A78BFA] flex items-center justify-center bg-gradient-to-tr from-[#A78BFA] to-[#6D28D9]">
+							<?php if(!empty($user['photo_profil'])): ?>
+								<img src="uploads/<?php echo htmlspecialchars($user['photo_profil']); ?>" alt="Profil" class="w-full h-full object-cover" />
+							<?php else: ?>
+								<span class="text-3xl font-bold text-white"><?php echo $initiales; ?></span>
+							<?php endif; ?>
+						</div>
+                    </label>
+                    <div>
+                        <h4 class="text-lg font-bold"><?php echo htmlspecialchars($user['prenom'] . ' ' . $user['nom']); ?></h4>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#A78BFA]/10 text-[#A78BFA] border border-[#A78BFA]/20 mt-1">
+                            <?php echo $user['est_membre_asso'] ? 'Membre' : 'Visiteur'; ?>
+                        </span>
+                    </div>
+                    <div class="w-full space-y-3 pt-2">
+                        <div class="text-left">
+                            <label class="text-[10px] uppercase tracking-wider text-[#52525B] font-bold">Adresse mail</label>
+                            <div class="mt-1 w-full h-9 bg-[#18181B] border border-[#27272A] rounded-lg px-3 flex items-center text-xs text-[#A1A1AA]"><?php echo htmlspecialchars($user['email']); ?></div>
+                        </div>
+                        <div class="text-left">
+                            <label class="text-[10px] uppercase tracking-wider text-[#52525B] font-bold">Mot de passe</label>
+                            <div class="mt-1 w-full h-9 bg-[#18181B] border border-[#27272A] rounded-lg px-3 flex items-center text-xs text-[#A1A1AA]">••••••••••</div>
+                        </div>
+                    </div>
+                    <div class="w-full pt-2 border-t border-[#27272A] space-y-2">
+                        <a href="modifier-profil.php" class="w-full block py-2 bg-[#18181B] border border-[#27272A] text-xs rounded-lg hover:border-[#A78BFA]/50 transition cursor-pointer text-center text-[#F5F5F7]">Modifier mon profil</a>
+                        <a href="deconnexion.php" class="w-full block py-2 text-xs text-rose-400 hover:text-rose-300 transition cursor-pointer text-center">Déconnexion</a>
+                    </div>
+                </div>
+        
+                <!-- Zone Onglets (Droite) -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-[#0B0B0F] border border-[#27272A] rounded-2xl overflow-hidden">
+                        
+                        <!-- Boutons des Onglets -->
+                        <div class="flex border-b border-[#27272A]">
+                            <button onclick="switchTab('reservations')" id="btn-reservations" class="tab-btn flex-1 py-3 text-xs font-bold transition cursor-pointer text-[#A78BFA] border-b-2 border-[#A78BFA]">Réservations</button>
+                            <button onclick="switchTab('my-events')" id="btn-my-events" class="tab-btn flex-1 py-3 text-xs font-bold transition cursor-pointer text-[#A1A1AA] hover:text-[#F5F5F7] border-b-2 border-transparent">Mes événements</button>
+                            <button onclick="switchTab('past-events')" id="btn-past-events" class="tab-btn flex-1 py-3 text-xs font-bold transition cursor-pointer text-[#A1A1AA] hover:text-[#F5F5F7] border-b-2 border-transparent">Événements passés</button>
+                        </div>
+                        
+                        <div class="p-5 space-y-3 relative min-h-[300px]">
+                            
+                            <!-- Contenu : Réservations -->
+                            <div id="tab-reservations" class="tab-content space-y-3">
+                                <?php if(empty($reservations)): ?>
+                                    <p class="text-sm text-[#A1A1AA] text-center pt-8">Aucune réservation à venir.</p>
+                                <?php else: ?>
+                                    <?php foreach($reservations as $res): ?>
+                                        <div class="flex justify-between items-center p-4 bg-[#18181B] rounded-xl border border-[#27272A]">
+                                            <div class="flex items-center gap-4">
+                                                <div class="w-10 h-10 bg-[#27272A] rounded-lg flex items-center justify-center text-lg"><?php echo getIcon($res['type_ressource']); ?></div>
+                                                <div>
+                                                    <p class="text-sm font-medium"><?php echo htmlspecialchars($res['nom']); ?></p>
+                                                    <p class="text-[10px] text-[#A1A1AA]"><?php echo date('d/m \à H:i', strtotime($res['date_debut'])); ?></p>
+                                                </div>
+                                            </div>
+                                            <span class="text-[10px] px-2 py-1 rounded-md font-bold <?php echo ($res['statut'] === 'Approuvée' || $res['statut'] === 'Confirmé') ? 'bg-green-500/10 text-green-400' : 'bg-amber-500/10 text-amber-400'; ?>">
+                                                <?php echo htmlspecialchars($res['statut']); ?>
+                                            </span>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- Contenu : Mes événements -->
+                            <div id="tab-my-events" class="tab-content space-y-3 hidden">
+                                <?php if(empty($myEvents)): ?>
+                                    <p class="text-sm text-[#A1A1AA] text-center pt-8">Vous n'êtes inscrit à aucun événement futur.</p>
+                                <?php else: ?>
+                                    <?php foreach($myEvents as $ev): ?>
+                                        <div class="flex justify-between items-center p-4 bg-[#18181B] rounded-xl border border-[#27272A]">
+                                            <div class="flex items-center gap-4">
+                                                <div class="w-10 h-10 bg-[#27272A] rounded-lg flex items-center justify-center text-lg"><?php echo getIcon($ev['type_evenement']); ?></div>
+                                                <div>
+                                                    <p class="text-sm font-medium"><?php echo htmlspecialchars($ev['titre']); ?></p>
+                                                    <p class="text-[10px] text-[#A1A1AA]"><?php echo date('d M.', strtotime($ev['date_debut'])); ?></p>
+                                                </div>
+                                            </div>
+                                            <span class="text-[10px] px-2 py-1 rounded-md font-bold <?php echo ($ev['statut_inscription'] === 'Confirmé') ? 'bg-green-500/10 text-green-400' : 'bg-amber-500/10 text-amber-400'; ?>">
+                                                <?php echo htmlspecialchars($ev['statut_inscription']); ?>
+                                            </span>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- Contenu : Événements passés -->
+                            <div id="tab-past-events" class="tab-content space-y-3 hidden">
+                                <?php if(empty($pastEvents)): ?>
+                                    <p class="text-sm text-[#A1A1AA] text-center pt-8">Aucun événement passé trouvé.</p>
+                                <?php else: ?>
+                                    <?php foreach($pastEvents as $ev): ?>
+                                        <div class="flex justify-between items-center p-4 bg-[#18181B] rounded-xl border border-[#27272A]">
+                                            <div class="flex items-center gap-4">
+                                                <div class="w-10 h-10 bg-[#27272A] rounded-lg flex items-center justify-center text-lg"><?php echo getIcon($ev['type_evenement']); ?></div>
+                                                <div>
+                                                    <p class="text-sm font-medium"><?php echo htmlspecialchars($ev['titre']); ?></p>
+                                                    <p class="text-[10px] text-[#A1A1AA]"><?php echo date('d M. Y', strtotime($ev['date_debut'])); ?></p>
+                                                </div>
+                                            </div>
+                                            <span class="text-[10px] px-2 py-1 rounded-md font-bold bg-[#27272A] text-[#71717A]">Terminé</span>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Script Javascript pour gérer les onglets -->
+    <script>
+        lucide.createIcons();
+
+        function switchTab(tabId) {
+            // Cacher tous les contenus
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // Afficher le contenu ciblé
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            // Réinitialiser les styles de tous les boutons
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('text-[#A78BFA]', 'border-[#A78BFA]');
+                el.classList.add('text-[#A1A1AA]', 'border-transparent');
+            });
+            // Activer le style du bouton cliqué
+            let activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('text-[#A1A1AA]', 'border-transparent');
+            activeBtn.classList.add('text-[#A78BFA]', 'border-[#A78BFA]');
+        }
+    </script>
+</body>
+</html>
