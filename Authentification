@@ -1,3 +1,49 @@
+<?php
+session_start();
+
+// Connexion à la base de données (MAMP utilise souvent root/root par défaut)
+$host = 'localhost';
+$dbname = 'campusmelody';
+$username = 'root';
+$password = 'root'; 
+
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Erreur de connexion : " . $e->getMessage());
+}
+
+$email_error = '';
+$password_error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = $_POST['email'];
+    $mdp = $_POST['mot_de_passe'];
+
+    // Vérification de l'email
+    $stmt = $pdo->prepare("SELECT * FROM utilisateur WHERE email = :email");
+    $stmt->execute(['email' => $email]);
+    $user = $stmt->fetch();
+
+    if (!$user) {
+        $email_error = "Compte non-existant";
+    } else {
+        // Vérification du mot de passe (gère les mots de passe en texte clair ou hachés)
+        if ($mdp !== $user['mot_de_passe'] && !password_verify($mdp, $user['mot_de_passe'])) {
+            $password_error = "Mot de passe incorecte";
+        } else {
+            // Connexion réussie : on stocke les infos en session et on redirige
+            $_SESSION['user_id'] = $user['id_utilisateur'];
+            $_SESSION['role'] = $user['role'];
+            $_SESSION['prenom'] = $user['prenom'];
+            
+            header("Location: accueil.php"); // Redirige vers l'accueil après connexion
+            exit();
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -26,47 +72,48 @@
             <nav class="flex-1 px-3 py-4">
                 <p class="text-[10px] font-semibold text-[#A1A1AA] uppercase tracking-widest px-3 mb-3">Pages</p>
                 <div class="space-y-1">
-                    <!-- Bouton Actif (Authentification) -->
-                    <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left bg-[#A78BFA] text-[#0B0B0F] font-bold">
-                        <i data-lucide="user" class="w-4 h-4 shrink-0"></i>
-                        <span class="text-sm font-medium">Authentification</span>
-                    </button>
-                    
-                    <!-- Boutons Inactifs -->
-                    <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
-                        <i data-lucide="home" class="w-4 h-4 shrink-0"></i>
-                        <span class="text-sm font-medium">Accueil</span>
-                    </button>
+                    <a href="accueil.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                        <i data-lucide="home" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Accueil</span>
+                    </a>
 
-                    <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
-                        <i data-lucide="calendar" class="w-4 h-4 shrink-0"></i>
-                        <span class="text-sm font-medium">Catalogue</span>
-                    </button>
+                    <a href="catalogue.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                        <i data-lucide="calendar" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Catalogue</span>
+                    </a>
 
-                    <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
-                        <i data-lucide="music" class="w-4 h-4 shrink-0"></i>
-                        <span class="text-sm font-medium">Détail Événement</span>
-                    </button>
+                    <a href="reservations.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                        <i data-lucide="settings" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Réservations</span>
+                    </a>
 
-                    <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
-                        <i data-lucide="settings" class="w-4 h-4 shrink-0"></i>
-                        <span class="text-sm font-medium">Réservation</span>
-                    </button>
+                    <a href="evenements.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                        <i data-lucide="music" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Evénements</span>
+                    </a>
 
-                    <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
-                        <i data-lucide="user" class="w-4 h-4 shrink-0"></i>
-                        <span class="text-sm font-medium">Profil</span>
-                    </button>
+                    <!-- Condition Profil ou Authentification -->
+                    <?php if(isset($_SESSION['user_id'])): ?>
+                        <a href="profil.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                            <i data-lucide="user" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Profil</span>
+                        </a>
+                    <?php else: ?>
+                        
+                        <a href="Authentification.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left bg-[#A78BFA] text-[#0B0B0F] font-bold">
+                            <i data-lucide="user" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Authentification</span>
+                        </a>
+                    <?php endif; ?>
 
-                    <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
-                        <i data-lucide="bell" class="w-4 h-4 shrink-0"></i>
-                        <span class="text-sm font-medium">Notifications</span>
-                    </button>
+                    <a href="notifications.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                        <i data-lucide="bell" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Notifications</span>
+                    </a>
 
-                    <button class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
-                        <i data-lucide="layout-grid" class="w-4 h-4 shrink-0"></i>
-                        <span class="text-sm font-medium">Tableau de bord admin</span>
-                    </button>
+                    <!-- Condition Admin -->
+                    <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 'Admin'): ?>
+                        <a href="admin.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                            <i data-lucide="layout-grid" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Tableau de bord Admin</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <a href="forums.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                        <i data-lucide="message-square" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Forums</span>
+                    </a>
                 </div>
             </nav>
         </aside>
@@ -89,19 +136,37 @@
                                 <h4 class="text-xl font-bold tracking-tight text-[#F5F5F7]">Campus Melody</h4>
                             </div>
                             
-                            <div class="w-full space-y-4">
-                                <input type="text" placeholder="Email" class="w-full h-12 bg-[#0B0B0F] rounded-xl border border-[#27272A] px-4 text-sm text-[#F5F5F7] placeholder-[#A1A1AA] focus:outline-none focus:border-[#A78BFA]/50" />
-                                <input type="password" placeholder="Mot de passe" class="w-full h-12 bg-[#0B0B0F] rounded-xl border border-[#27272A] px-4 text-sm text-[#F5F5F7] placeholder-[#A1A1AA] focus:outline-none focus:border-[#A78BFA]/50" />
-                                <button class="w-full h-12 bg-[#A78BFA] text-[#0B0B0F] rounded-xl font-semibold flex items-center justify-center text-sm cursor-pointer hover:bg-[#A78BFA]/90 transition">
+                            <form method="POST" action="" class="w-full space-y-4">
+                                <div>
+                                    <input type="email" name="email" placeholder="Email" required 
+                                           value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>"
+                                           class="w-full h-12 bg-[#0B0B0F] rounded-xl border border-[#27272A] px-4 text-sm text-[#F5F5F7] placeholder-[#A1A1AA] focus:outline-none focus:border-[#A78BFA]/50" />
+                                    <!-- Message d'erreur Email -->
+                                    <?php if(!empty($email_error)): ?>
+                                        <p class="text-red-500 text-xs mt-1 font-medium"><?php echo $email_error; ?></p>
+                                    <?php endif; ?>
+                                </div>
+
+                                <div>
+                                    <input type="password" name="mot_de_passe" placeholder="Mot de passe" required 
+                                           class="w-full h-12 bg-[#0B0B0F] rounded-xl border border-[#27272A] px-4 text-sm text-[#F5F5F7] placeholder-[#A1A1AA] focus:outline-none focus:border-[#A78BFA]/50" />
+                                    <!-- Message d'erreur Mot de passe -->
+                                    <?php if(!empty($password_error)): ?>
+                                        <p class="text-red-500 text-xs mt-1 font-medium"><?php echo $password_error; ?></p>
+                                    <?php endif; ?>
+                                </div>
+
+                                <button type="submit" class="w-full h-12 bg-[#A78BFA] text-[#0B0B0F] rounded-xl font-semibold flex items-center justify-center text-sm cursor-pointer hover:bg-[#A78BFA]/90 transition">
                                     Connexion
                                 </button>
+                                
                                 <div class="text-center pt-2">
                                     <p class="text-xs text-[#A1A1AA]">
                                         Pas de compte ? 
                                         <span class="text-[#A78BFA] font-medium hover:underline cursor-pointer">Inscris-toi ici</span>
                                     </p>
                                 </div>
-                            </div>
+                            </form>
                             
                         </div>
                     </div>
