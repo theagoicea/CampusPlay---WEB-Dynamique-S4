@@ -1,0 +1,216 @@
+<?php
+session_start();
+
+$host = 'localhost';
+$dbname = 'campusmelody';
+$username = 'root';
+$password = 'root'; 
+
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Erreur de connexion : " . $e->getMessage());
+}
+
+$error_msg = '';
+$success_msg = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nom = trim($_POST['nom']);
+    $prenom = trim($_POST['prenom']);
+    $email = trim($_POST['email']);
+    $mdp = password_hash($_POST['mot_de_passe'], PASSWORD_DEFAULT); // Sécurité du mot de passe
+    
+    // Si la case "membre" est cochée, on prépare les bonnes valeurs
+    $demande_membre = isset($_POST['demande_membre']) ? 1 : 0;
+    $statut_adhesion = $demande_membre ? 'En attente' : 'Non membre';
+
+    // Vérifier si l'email existe déjà
+    $stmt = $pdo->prepare("SELECT id_utilisateur FROM utilisateur WHERE email = :email");
+    $stmt->execute(['email' => $email]);
+    
+    if ($stmt->fetch()) {
+        $error_msg = "Cet email est déjà utilisé.";
+    } else {
+        // Créer l'utilisateur
+        $insertUser = $pdo->prepare("INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, est_membre_asso, statut_adhesion) VALUES (:nom, :prenom, :email, :mdp, :membre, :statut)");
+        $insertUser->execute([
+            'nom' => $nom, 'prenom' => $prenom, 'email' => $email, 'mdp' => $mdp, 
+            'membre' => $demande_membre, 'statut' => $statut_adhesion
+        ]);
+
+        // Si demande d'adhésion, envoyer une notification aux admins
+        if ($demande_membre) {
+            // Trouver tous les admins
+            $admins = $pdo->query("SELECT id_utilisateur FROM utilisateur WHERE role = 'Admin'")->fetchAll();
+            $insertNotif = $pdo->prepare("INSERT INTO notification (titre, message, type_notification, id_destinataire) VALUES (?, ?, 'Demande adhésion', ?)");
+            
+            foreach ($admins as $admin) {
+                $insertNotif->execute([
+                    "Nouvelle demande d'adhésion", 
+                    "$prenom $nom souhaite rejoindre l'association.", 
+                    $admin['id_utilisateur']
+                ]);
+            }
+            $success_msg = "Compte créé ! Votre demande d'adhésion est en attente de validation.";
+        } else {
+            $success_msg = "Compte créé avec succès ! Vous pouvez maintenant vous connecter.";
+        }
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Melody - Authentification</title>
+    
+    <!-- Importation de Tailwind CSS pour le style -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Importation de la librairie d'icônes Lucide -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen font-sans">
+
+    <div class="flex min-h-screen">
+        <!-- Barre latérale (Sidebar) -->
+        <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col sticky top-0 h-screen overflow-y-auto">
+            <div class="px-6 py-8 border-b border-[#27272A]">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
+                    <h1 class="text-sm font-bold text-[#F5F5F7] leading-tight">Campus Melody</h1>
+                </div>
+            </div>
+            
+            <nav class="flex-1 px-3 py-4">
+                <p class="text-[10px] font-semibold text-[#A1A1AA] uppercase tracking-widest px-3 mb-3">Pages</p>
+                <div class="space-y-1">
+                    <a href="accueil.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                        <i data-lucide="home" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Accueil</span>
+                    </a>
+
+                    <a href="catalogue.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                        <i data-lucide="calendar" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Catalogue</span>
+                    </a>
+
+                    <a href="reservations.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                        <i data-lucide="settings" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Réservations</span>
+                    </a>
+
+                    <a href="evenements.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                        <i data-lucide="music" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Evénements</span>
+                    </a>
+
+                    <!-- Condition Profil ou Authentification -->
+                    <?php if(isset($_SESSION['user_id'])): ?>
+                        <a href="profil.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                            <i data-lucide="user" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Profil</span>
+                        </a>
+                    <?php else: ?>
+                        
+                        <a href="Authentification.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left bg-[#A78BFA] text-[#0B0B0F] font-bold">
+                            <i data-lucide="user" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Authentification</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <a href="notifications.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                        <i data-lucide="bell" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Notifications</span>
+                    </a>
+
+                    <!-- Condition Admin -->
+                    <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 'Admin'): ?>
+                        <a href="admin.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                            <i data-lucide="layout-grid" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Tableau de bord Admin</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <a href="forums.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                        <i data-lucide="message-square" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Forums</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Contenu Principal -->
+        <main class="flex-1 overflow-y-auto">
+            <div class="px-8 py-10">
+
+                <!-- Composant Authentification -->
+                <div class="bg-[#18181B] rounded-3xl p-8 text-[#F5F5F7] border border-[#27272A]">
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-semibold mb-2">Authentification</h3>
+                        <p class="text-[#A1A1AA]">Page de connexion</p>
+                    </div>
+                    <div class="bg-[#0B0B0F] rounded-2xl p-12 border-2 border-dashed border-[#A78BFA]/20 flex items-center justify-center">
+                        <div class="w-full max-w-md bg-[#18181B] border border-[#27272A] rounded-2xl p-8 shadow-xl flex flex-col items-center">
+                            
+                            <div class="text-center mb-8">
+                                <div class="w-16 h-16 bg-[#A78BFA]/10 rounded-2xl mx-auto mb-3 border border-[#A78BFA]/30 flex items-center justify-center text-[#A78BFA] font-bold text-2xl">🎵</div>
+                                <h4 class="text-xl font-bold tracking-tight text-[#F5F5F7]">Campus Melody</h4>
+                            </div>
+                            
+							<form method="POST" action="" class="w-full space-y-4">
+                                <div class="flex gap-4">
+                                    <input type="text" name="prenom" placeholder="Prénom" required 
+                                           class="w-1/2 h-12 bg-[#0B0B0F] rounded-xl border border-[#27272A] px-4 text-sm text-[#F5F5F7] placeholder-[#A1A1AA] focus:outline-none focus:border-[#A78BFA]/50" />
+                                    <input type="text" name="nom" placeholder="Nom" required 
+                                           class="w-1/2 h-12 bg-[#0B0B0F] rounded-xl border border-[#27272A] px-4 text-sm text-[#F5F5F7] placeholder-[#A1A1AA] focus:outline-none focus:border-[#A78BFA]/50" />
+                                </div>
+
+                                <div>
+                                    <input type="email" name="email" placeholder="Email" required 
+                                           class="w-full h-12 bg-[#0B0B0F] rounded-xl border border-[#27272A] px-4 text-sm text-[#F5F5F7] placeholder-[#A1A1AA] focus:outline-none focus:border-[#A78BFA]/50" />
+                                </div>
+
+                                <div>
+                                    <input type="password" name="mot_de_passe" placeholder="Mot de passe" required 
+                                           class="w-full h-12 bg-[#0B0B0F] rounded-xl border border-[#27272A] px-4 text-sm text-[#F5F5F7] placeholder-[#A1A1AA] focus:outline-none focus:border-[#A78BFA]/50" />
+                                </div>
+
+                                <!-- Choix du type de compte (Checkbox) -->
+                                <label class="flex items-start gap-3 p-3 bg-[#0B0B0F] border border-[#27272A] rounded-xl cursor-pointer hover:border-[#A78BFA]/50 transition mt-2">
+                                    <input type="checkbox" name="demande_membre" class="w-4 h-4 mt-0.5 accent-[#A78BFA] cursor-pointer" />
+                                    <div class="flex flex-col">
+                                        <span class="text-sm font-medium text-[#F5F5F7]">Je souhaite devenir membre de l'association</span>
+                                        <span class="text-[10px] text-[#A1A1AA]">Soumis à validation. Permet de réserver des studios et créer des événements.</span>
+                                    </div>
+                                </label>
+
+                                <!-- Messages d'erreur ou succès -->
+                                <?php if(!empty($error_msg)): ?>
+                                    <p class="text-red-500 text-xs mt-1 font-medium text-center"><?php echo $error_msg; ?></p>
+                                <?php endif; ?>
+                                <?php if(!empty($success_msg)): ?>
+                                    <p class="text-green-500 text-xs mt-1 font-medium text-center"><?php echo $success_msg; ?></p>
+                                <?php endif; ?>
+
+                                <button type="submit" class="w-full h-12 bg-[#A78BFA] text-[#0B0B0F] rounded-xl font-semibold flex items-center justify-center text-sm cursor-pointer hover:bg-[#A78BFA]/90 transition">
+                                    S'inscrire
+                                </button>
+                                
+                                <div class="text-center pt-2">
+                                    <p class="text-xs text-[#A1A1AA]">
+                                        Déjà un compte ? 
+                                        <a href="Authentification.php" class="text-[#A78BFA] font-medium hover:underline cursor-pointer">Connecte-toi ici</a>
+                                    </p>
+                                </div>
+                            </form>
+                            
+                        </div>
+                    </div>
+                </div>
+                <!-- Fin Composant Authentification -->
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Script d'initialisation pour afficher les icônes Lucide -->
+    <script>
+      lucide.createIcons();
+    </script>
+</body>
+</html>
