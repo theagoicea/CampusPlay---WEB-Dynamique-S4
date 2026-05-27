@@ -37,7 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $insertUser = $pdo->prepare("INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, est_membre_asso, statut_adhesion) VALUES (:nom, :prenom, :email, :mdp, :membre, :statut)");
         $insertUser->execute([
             'nom' => $nom, 'prenom' => $prenom, 'email' => $email, 'mdp' => $mdp, 
-            'membre' => $demande_membre, 'statut' => $statut_adhesion
+            'membre' => 0, /* Reste à 0 tant que l'admin ne valide pas */
+            'statut' => $statut_adhesion
         ]);
 
         // Si demande d'adhésion, envoyer une notification aux admins
@@ -88,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <nav class="flex-1 px-3 py-4">
                 <p class="text-[10px] font-semibold text-[#A1A1AA] uppercase tracking-widest px-3 mb-3">Pages</p>
                 <div class="space-y-1">
-                    <a href="accueil.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                    <a href="Accueil.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
                         <i data-lucide="home" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Accueil</span>
                     </a>
 
