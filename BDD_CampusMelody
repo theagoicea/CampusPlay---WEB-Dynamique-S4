@@ -18,6 +18,7 @@ CREATE TABLE utilisateur (
     prenom VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL,
     mot_de_passe VARCHAR(255) NOT NULL,
+	photo_profil VARCHAR(255) DEFAULT NULL,
     role VARCHAR(50) NOT NULL DEFAULT 'Visiteur', -- 'Visiteur', 'Membre', 'Organisateur' ou 'Admin'
     est_membre_asso BOOLEAN DEFAULT FALSE,
     statut_adhesion VARCHAR(50) DEFAULT 'Non membre', -- 'Non membre', 'En attente', 'Validé'
