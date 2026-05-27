@@ -163,7 +163,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="text-center pt-2">
                                     <p class="text-xs text-[#A1A1AA]">
                                         Pas de compte ? 
-                                        <span class="text-[#A78BFA] font-medium hover:underline cursor-pointer">Inscris-toi ici</span>
+										<a href="inscription.php" class="text-[#A78BFA] font-medium hover:underline cursor-pointer">Inscris-toi ici</a>
                                     </p>
                                 </div>
                             </form>
