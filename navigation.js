@@ -13,10 +13,10 @@ async function loadSidebar() {
     const activeClasses = "bg-[#A78BFA] text-[#0B0B0F] font-bold";
 
     let menuItems = [
-        { name: 'Accueil', icon: 'home', url: 'Accueil.html' },
-        { name: 'Catalogue', icon: 'calendar', url: 'Catalogue.html' },
-        { name: 'Réservations', icon: 'settings', url: 'Reservations.html' },
-        { name: 'Evénements', icon: 'music', url: 'Evenements.html' }
+        { name: 'Accueil', icon: 'home', url: 'accueil.html' },
+        { name: 'Catalogue', icon: 'calendar', url: 'catalogue.html' },
+        { name: 'Réservations', icon: 'settings', url: 'reservations.php' },
+        { name: 'Evénements', icon: 'music', url: 'evenements.html' }
     ];
 
     if (user.is_logged) {
