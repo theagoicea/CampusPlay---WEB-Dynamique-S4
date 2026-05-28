@@ -153,6 +153,7 @@ CREATE TABLE forum (
     date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     est_ferme BOOLEAN DEFAULT FALSE,
     id_createur INT NOT NULL,
+	categorie VARCHAR(50) DEFAULT 'general',
     id_evenement_associe INT NULL, -- Permet d'avoir un fil de discussion lié à un événement
     CONSTRAINT pk_forum PRIMARY KEY (id_forum),
     CONSTRAINT fk_forum_createur FOREIGN KEY (id_createur) REFERENCES utilisateur(id_utilisateur) ON DELETE CASCADE ON UPDATE CASCADE,
