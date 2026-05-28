@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Campus Melody - Nouveau sujet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen font-sans flex hidden" id="page-body">
+
+    <!-- BARRE LATÉRALE (Gérée par navigation.js) -->
+    <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col sticky top-0 h-screen overflow-y-auto">
+        <div class="px-6 py-8 border-b border-[#27272A]">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
+                <h1 class="text-sm font-bold text-[#F5F5F7] leading-tight">Campus Melody</h1>
+            </div>
+        </div>
+        
+        <nav class="flex-1 px-3 py-4">
+            <p class="text-[10px] font-semibold text-[#A1A1AA] uppercase tracking-widest px-3 mb-3">Pages</p>
+            <div id="sidebar-nav" class="space-y-1"></div>
+        </nav>
+    </aside>
+
+    <!-- CONTENU PRINCIPAL -->
+    <main class="flex-1 overflow-y-auto px-8 py-10">
+        
+        <div class="bg-[#18181B] rounded-3xl p-8 border border-[#27272A] max-w-3xl mx-auto">
+            
+            <div class="mb-8">
+                <a href="forums.html" class="inline-flex items-center text-xs font-bold text-[#A78BFA] hover:underline mb-4">
+                    <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Retour aux forums
+                </a>
+                <h3 class="text-2xl font-bold tracking-tight">Créer un nouveau sujet</h3>
+                <p class="text-sm text-[#A1A1AA]">Lancez une nouvelle discussion avec la communauté</p>
+            </div>
+            
+            <div class="bg-[#0B0B0F] border border-[#27272A] rounded-2xl p-6">
+                <form id="create-topic-form" class="space-y-6">
+                    
+                    <!-- Titre -->
+                    <div>
+                        <label class="text-[10px] uppercase tracking-wider text-[#52525B] font-bold block mb-2">Titre du sujet</label>
+                        <input type="text" name="titre" id="titre" required placeholder="Ex: Quel ampli choisir pour débuter ?"
+                               class="w-full h-12 bg-[#18181B] rounded-xl border border-[#27272A] px-4 text-sm text-[#F5F5F7] focus:outline-none focus:border-[#A78BFA]/50 placeholder-[#52525B]" />
+                    </div>
+
+                    <!-- Catégorie -->
+                    <div>
+                        <label class="text-[10px] uppercase tracking-wider text-[#52525B] font-bold block mb-2">Catégorie</label>
+                        <select name="categorie" id="categorie" required class="w-full h-12 bg-[#18181B] rounded-xl border border-[#27272A] px-4 text-sm text-[#F5F5F7] focus:outline-none focus:border-[#A78BFA]/50 cursor-pointer appearance-none">
+                            <option value="" disabled selected>Sélectionnez une catégorie...</option>
+                            <option value="general">💬 Général</option>
+                            <option value="events">📅 Événements</option>
+                            <option value="jam">🎸 Jam Sessions</option>
+                            <option value="tech">🎧 Technique & Matériel</option>
+                            <option value="collab">🤝 Collaborations</option>
+                        </select>
+                    </div>
+
+                    <!-- Premier message -->
+                    <div>
+                        <label class="text-[10px] uppercase tracking-wider text-[#52525B] font-bold block mb-2">Votre message</label>
+                        <textarea name="contenu" id="contenu" required rows="6" placeholder="Détaillez votre question ou votre proposition ici..."
+                                  class="w-full bg-[#18181B] rounded-xl border border-[#27272A] p-4 text-sm text-[#F5F5F7] focus:outline-none focus:border-[#A78BFA]/50 placeholder-[#52525B] resize-none"></textarea>
+                    </div>
+
+                    <!-- Message d'erreur masqué par défaut -->
+                    <p id="error-msg" class="text-red-500 text-xs font-medium bg-red-500/10 p-3 rounded-lg border border-red-500/20 text-center hidden"></p>
+
+                    <!-- Bouton Submit -->
+                    <div class="pt-2">
+                        <button type="submit" id="submit-btn" class="w-full h-12 bg-[#A78BFA] text-[#0B0B0F] rounded-xl font-bold flex items-center justify-center text-sm cursor-pointer hover:bg-[#A78BFA]/90 transition shadow-lg shadow-[#A78BFA]/10">
+                            Publier la discussion
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="navigation.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            lucide.createIcons();
+            const errorMsg = document.getElementById('error-msg');
+
+            // 1. Vérifier si l'utilisateur est bien connecté
+            try {
+                const response = await fetch('b_creer-sujet.php');
+                const data = await response.json();
+                
+                if (!data.success && data.error === 'not_logged_in') {
+                    window.location.href = 'authentification.html';
+                    return;
+                }
+                
+                // On affiche la page une fois vérifié
+                document.getElementById('page-body').classList.remove('hidden');
+            } catch (error) {
+                console.error('Erreur :', error);
+            }
+
+            // 2. Traitement du formulaire
+            document.getElementById('create-topic-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                errorMsg.classList.add('hidden');
+                
+                // Petit effet de chargement sur le bouton
+                const submitBtn = document.getElementById('submit-btn');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Publication en cours...';
+                submitBtn.disabled = true;
+
+                const formData = new FormData(this);
+
+                try {
+                    const res = await fetch('b_creer-sujet.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await res.json();
+
+                    if (result.success) {
+                        // Si ça a marché, on redirige vers le forum
+                        window.location.href = result.redirect;
+                    } else {
+                        // On affiche l'erreur
+                        errorMsg.textContent = result.error_msg;
+                        errorMsg.classList.remove('hidden');
+                        submitBtn.textContent = originalText;
+                        submitBtn.disabled = false;
+                    }
+                } catch (error) {
+                    errorMsg.textContent = "Erreur de connexion au serveur.";
+                    errorMsg.classList.remove('hidden');
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

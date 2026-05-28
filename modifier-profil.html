@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Campus Melody - Modifier mon profil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen font-sans flex hidden" id="page-body">
+
+    <!-- BARRE LATÉRALE -->
+    <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col sticky top-0 h-screen overflow-y-auto">
+        <div class="px-6 py-8 border-b border-[#27272A]">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
+                <h1 class="text-sm font-bold text-[#F5F5F7] leading-tight">Campus Melody</h1>
+            </div>
+        </div>
+        
+        <nav class="flex-1 px-3 py-4">
+            <p class="text-[10px] font-semibold text-[#A1A1AA] uppercase tracking-widest px-3 mb-3">Pages</p>
+            <div id="sidebar-nav" class="space-y-1"></div>
+        </nav>
+    </aside>
+
+    <!-- CONTENU PRINCIPAL -->
+    <main class="flex-1 overflow-y-auto px-8 py-10">
+        <div class="bg-[#18181B] rounded-3xl p-8 border border-[#27272A] max-w-xl mx-auto mt-10">
+            
+            <div class="mb-8">
+                <a href="profil.html" class="inline-flex items-center text-xs font-bold text-[#A78BFA] hover:underline mb-4">
+                    <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Retour au profil
+                </a>
+                <h3 class="text-2xl font-bold tracking-tight">Modifier mon profil</h3>
+                <p class="text-sm text-[#A1A1AA]">Mettez à jour vos informations personnelles.</p>
+            </div>
+            
+            <div class="bg-[#0B0B0F] border border-[#27272A] rounded-2xl p-6">
+                
+                <!-- FORMULAIRE DE MISE À JOUR -->
+                <form id="update-form" class="space-y-4">
+                    
+                    <div class="flex gap-4">
+                        <div class="w-1/2">
+                            <label class="text-[10px] uppercase tracking-wider text-[#52525B] font-bold block mb-1">Prénom</label>
+                            <input type="text" id="prenom" name="prenom" required 
+                                   class="w-full h-12 bg-[#18181B] rounded-xl border border-[#27272A] px-4 text-sm text-[#F5F5F7] focus:outline-none focus:border-[#A78BFA]/50" />
+                        </div>
+                        <div class="w-1/2">
+                            <label class="text-[10px] uppercase tracking-wider text-[#52525B] font-bold block mb-1">Nom</label>
+                            <input type="text" id="nom" name="nom" required 
+                                   class="w-full h-12 bg-[#18181B] rounded-xl border border-[#27272A] px-4 text-sm text-[#F5F5F7] focus:outline-none focus:border-[#A78BFA]/50" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] uppercase tracking-wider text-[#52525B] font-bold block mb-1">Adresse email</label>
+                        <input type="email" id="email" name="email" required 
+                               class="w-full h-12 bg-[#18181B] rounded-xl border border-[#27272A] px-4 text-sm text-[#F5F5F7] focus:outline-none focus:border-[#A78BFA]/50" />
+                    </div>
+
+                    <div class="pt-2">
+                        <label class="text-[10px] uppercase tracking-wider text-[#52525B] font-bold block mb-1">Nouveau mot de passe (optionnel)</label>
+                        <input type="password" id="mot_de_passe" name="mot_de_passe" placeholder="Laissez vide pour conserver l'actuel" 
+                               class="w-full h-12 bg-[#18181B] rounded-xl border border-[#27272A] px-4 text-sm text-[#F5F5F7] placeholder-[#52525B] focus:outline-none focus:border-[#A78BFA]/50" />
+                    </div>
+
+                    <div class="pt-2">
+                        <label class="text-[10px] uppercase tracking-wider text-[#52525B] font-bold block mb-1">Photo de profil</label>
+                        <input type="file" name="photo" accept="image/*" 
+                               class="w-full text-sm text-[#A1A1AA] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#A78BFA]/10 file:text-[#A78BFA] hover:file:bg-[#A78BFA]/20 cursor-pointer" />
+                        <p id="photo-info" class="text-[10px] text-green-400 mt-1 hidden">Vous avez déjà une photo. En choisir une nouvelle la remplacera.</p>
+                    </div>
+
+                    <!-- Messages de retour UI -->
+                    <p id="error-msg" class="text-red-500 text-xs mt-2 font-medium bg-red-500/10 p-2 rounded-lg border border-red-500/20 hidden"></p>
+                    <p id="success-msg" class="text-green-400 text-xs mt-2 font-medium bg-green-500/10 p-2 rounded-lg border border-green-500/20 hidden"></p>
+
+                    <div class="pt-4 flex gap-3">
+                        <button type="submit" class="flex-1 h-12 bg-[#A78BFA] text-[#0B0B0F] rounded-xl font-semibold flex items-center justify-center text-sm cursor-pointer hover:bg-[#A78BFA]/90 transition">
+							Enregistrer les modifications
+						</button>
+                    </div>
+                </form>
+				
+				<!-- Ligne de séparation -->
+                <div class="my-6 border-t border-[#27272A]"></div>
+
+                <!-- ACTIONS SECONDAIRES -->
+                <div class="flex flex-col gap-4" id="extra-actions">
+                    <!-- Les boutons d'adhésion seront injectés ici par le JS -->
+                    <button id="btn-delete-account" class="w-full h-12 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl font-semibold text-sm cursor-pointer hover:bg-rose-500/20 transition">
+                        Supprimer mon compte
+                    </button>
+                </div>
+				
+            </div>
+        </div>
+    </main>
+
+    <script src="navigation.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            lucide.createIcons();
+            const errorMsg = document.getElementById('error-msg');
+            const successMsg = document.getElementById('success-msg');
+
+            // 1. CHARGEMENT DES DONNÉES DU PROFIL
+            try {
+                const response = await fetch('b_modifier-profil.php'); // GET par défaut
+                const data = await response.json();
+
+                if (!data.success && data.error === 'not_logged_in') {
+                    window.location.href = 'authentification.html';
+                    return;
+                }
+
+                document.getElementById('page-body').classList.remove('hidden');
+
+                // Pré-remplissage des champs
+                document.getElementById('prenom').value = data.user.prenom;
+                document.getElementById('nom').value = data.user.nom;
+                document.getElementById('email').value = data.user.email;
+
+                if (data.user.photo_profil) {
+                    document.getElementById('photo-info').classList.remove('hidden');
+                }
+
+                // Bouton d'adhésion conditionnel
+                const actionsDiv = document.getElementById('extra-actions');
+                
+                if (data.user.est_membre_asso == 0 && data.user.statut_adhesion !== 'En attente') {
+                    const btn = document.createElement('button');
+                    btn.id = 'btn-request-membership';
+                    btn.className = "w-full h-12 bg-[#18181B] border border-[#27272A] text-[#F5F5F7] rounded-xl font-semibold text-sm cursor-pointer hover:border-[#A78BFA]/50 transition";
+                    btn.textContent = "Demander à devenir membre de l'association";
+                    
+                    btn.addEventListener('click', async () => {
+                        const formData = new FormData();
+                        formData.append('action', 'request_membership');
+                        const res = await fetch('b_modifier-profil.php', { method: 'POST', body: formData });
+                        const resData = await res.json();
+                        if (resData.success) {
+                            alert(resData.message);
+                            location.reload(); // On recharge pour actualiser le statut
+                        }
+                    });
+                    
+                    actionsDiv.insertBefore(btn, document.getElementById('btn-delete-account'));
+                } 
+                else if (data.user.statut_adhesion === 'En attente') {
+                    const div = document.createElement('div');
+                    div.className = "w-full h-12 bg-[#18181B] border border-amber-500/30 text-amber-500 rounded-xl font-semibold flex items-center justify-center text-sm cursor-not-allowed opacity-80";
+                    div.textContent = "Demande d'adhésion en attente";
+                    actionsDiv.insertBefore(div, document.getElementById('btn-delete-account'));
+                }
+
+            } catch (error) {
+                console.error("Erreur de chargement :", error);
+            }
+
+            // 2. MISE À JOUR DU PROFIL
+            document.getElementById('update-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                errorMsg.classList.add('hidden');
+                successMsg.classList.add('hidden');
+
+                const formData = new FormData(this);
+                formData.append('action', 'update_profile'); // On spécifie l'action
+
+                try {
+                    const res = await fetch('b_modifier-profil.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await res.json();
+
+                    if (result.success) {
+                        successMsg.textContent = result.message;
+                        successMsg.classList.remove('hidden');
+                        document.getElementById('mot_de_passe').value = ''; // On vide le champ mdp
+                    } else {
+                        errorMsg.textContent = result.error_msg;
+                        errorMsg.classList.remove('hidden');
+                    }
+                } catch (error) {
+                    errorMsg.textContent = "Une erreur s'est produite lors de la sauvegarde.";
+                    errorMsg.classList.remove('hidden');
+                }
+            });
+
+            // 3. SUPPRESSION DU COMPTE
+            document.getElementById('btn-delete-account').addEventListener('click', async () => {
+                if (confirm('Êtes-vous sûr de vouloir supprimer définitivement votre compte ? Cette action est irréversible.')) {
+                    const formData = new FormData();
+                    formData.append('action', 'delete_account');
+                    
+                    const res = await fetch('b_modifier-profil.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await res.json();
+                    
+                    if (result.success) {
+                        window.location.href = result.redirect; // Renvoie vers l'authentification
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

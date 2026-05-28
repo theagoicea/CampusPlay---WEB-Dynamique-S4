@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Melody - Authentification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen font-sans">
+
+    <div class="flex min-h-screen">
+        <!-- Barre latérale (Gérée par navigation.js) -->
+        <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col sticky top-0 h-screen overflow-y-auto">
+            <div class="px-6 py-8 border-b border-[#27272A]">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
+                    <h1 class="text-sm font-bold text-[#F5F5F7] leading-tight">Campus Melody</h1>
+                </div>
+            </div>
+            
+            <nav class="flex-1 px-3 py-4">
+                <p class="text-[10px] font-semibold text-[#A1A1AA] uppercase tracking-widest px-3 mb-3">Pages</p>
+                <!-- Menu injecté par JS -->
+                <div id="sidebar-nav" class="space-y-1"></div>
+            </nav>
+        </aside>
+
+        <!-- Contenu Principal -->
+        <main class="flex-1 overflow-y-auto">
+            <div class="px-8 py-10">
+                <div class="bg-[#18181B] rounded-3xl p-8 text-[#F5F5F7] border border-[#27272A]">
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-semibold mb-2">Authentification</h3>
+                        <p class="text-[#A1A1AA]">Page de connexion</p>
+                    </div>
+                    <div class="bg-[#0B0B0F] rounded-2xl p-12 border-2 border-dashed border-[#A78BFA]/20 flex items-center justify-center">
+                        <div class="w-full max-w-md bg-[#18181B] border border-[#27272A] rounded-2xl p-8 shadow-xl flex flex-col items-center">
+                            
+                            <div class="text-center mb-8">
+                                <div class="w-16 h-16 bg-[#A78BFA]/10 rounded-2xl mx-auto mb-3 border border-[#A78BFA]/30 flex items-center justify-center text-[#A78BFA] font-bold text-2xl">🎵</div>
+                                <h4 class="text-xl font-bold tracking-tight text-[#F5F5F7]">Campus Melody</h4>
+                            </div>
+                            
+                            <form id="login-form" class="w-full space-y-4">
+                                <div>
+                                    <input type="email" id="email" name="email" placeholder="Email" required 
+                                           class="w-full h-12 bg-[#0B0B0F] rounded-xl border border-[#27272A] px-4 text-sm text-[#F5F5F7] placeholder-[#A1A1AA] focus:outline-none focus:border-[#A78BFA]/50" />
+                                    <p id="email-error" class="text-red-500 text-xs mt-1 font-medium hidden"></p>
+                                </div>
+
+                                <div>
+                                    <input type="password" id="mot_de_passe" name="mot_de_passe" placeholder="Mot de passe" required 
+                                           class="w-full h-12 bg-[#0B0B0F] rounded-xl border border-[#27272A] px-4 text-sm text-[#F5F5F7] placeholder-[#A1A1AA] focus:outline-none focus:border-[#A78BFA]/50" />
+                                    <p id="password-error" class="text-red-500 text-xs mt-1 font-medium hidden"></p>
+                                </div>
+
+                                <button type="submit" class="w-full h-12 bg-[#A78BFA] text-[#0B0B0F] rounded-xl font-semibold flex items-center justify-center text-sm cursor-pointer hover:bg-[#A78BFA]/90 transition">
+                                    Connexion
+                                </button>
+                                
+                                <div class="text-center pt-2">
+                                    <p class="text-xs text-[#A1A1AA]">
+                                        Pas de compte ? <a href="inscription.html" class="text-[#A78BFA] font-medium hover:underline cursor-pointer">Inscris-toi ici</a>
+                                    </p>
+                                </div>
+                            </form>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="navigation.js"></script>
+    <script>
+        lucide.createIcons();
+
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            document.getElementById('email-error').classList.add('hidden');
+            document.getElementById('password-error').classList.add('hidden');
+
+            const formData = new FormData(this);
+
+            try {
+                // APPEL DU NOUVEAU FICHIER BACKEND ICI
+                const response = await fetch('b_authentification.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+
+                if (result.success) {
+                    window.location.href = 'profil.html'; 
+                } else {
+                    if (result.email_error) {
+                        const emailErr = document.getElementById('email-error');
+                        emailErr.textContent = result.email_error;
+                        emailErr.classList.remove('hidden');
+                    }
+                    if (result.password_error) {
+                        const passErr = document.getElementById('password-error');
+                        passErr.textContent = result.password_error;
+                        passErr.classList.remove('hidden');
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        });
+    </script>
+</body>
+</html>
