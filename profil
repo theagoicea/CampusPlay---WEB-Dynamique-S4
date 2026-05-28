@@ -95,7 +95,7 @@ function getIcon($type) {
         <nav class="flex-1 px-3 py-4">
             <p class="text-[10px] font-semibold text-[#A1A1AA] uppercase tracking-widest px-3 mb-3">Pages</p>
             <div class="space-y-1">
-                <a href="Accueil.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]"><i data-lucide="home" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Accueil</span></a>
+                <a href="accueil.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]"><i data-lucide="home" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Accueil</span></a>
                 <a href="catalogue.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]"><i data-lucide="calendar" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Catalogue</span></a>
                 <a href="reservations.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]"><i data-lucide="settings" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Réservations</span></a>
                 <a href="evenements.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]"><i data-lucide="music" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Evénements</span></a>
