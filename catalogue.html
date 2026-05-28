@@ -7,61 +7,52 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen font-sans flex">
+<body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen">
+    <div class="flex min-h-screen">
+        <aside class="w-64 bg-[#18181B] border-r border-[#27272A] flex flex-col h-screen sticky top-0">
+            <div class="p-8 flex items-center gap-3">
+                <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
+                <h1 class="text-sm font-bold">Campus Melody</h1>
+            </div>
+            <nav class="flex-1 px-3">
+                <p class="text-[10px] text-[#A1A1AA] uppercase px-3 mb-4">Pages</p>
+                <div id="sidebar-nav" class="space-y-1"></div>
+            </nav>
+        </aside>
 
-    <!-- SIDEBAR (Remplie par navigation.js) -->
-    <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col h-screen sticky top-0">
-        <div class="p-8 flex items-center gap-3">
-            <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
-            <h1 class="text-sm font-bold">Campus Melody</h1>
-        </div>
-        <nav class="flex-1 px-3">
-            <p class="text-[10px] text-[#A1A1AA] uppercase px-3 mb-4 tracking-widest font-semibold">Pages</p>
-            <div id="sidebar-nav" class="space-y-1"></div>
-        </nav>
-    </aside>
-
-    <!-- CONTENU PRINCIPAL -->
-    <main class="flex-1 overflow-y-auto px-8 py-10">
-        
-        <!-- CASE DE TOUR GRISE -->
-        <div class="bg-[#18181B] rounded-3xl p-8 border border-[#27272A] max-w-6xl mx-auto">
-            
-            <!-- TopBar -->
-            <div class="top-bar w-full mb-10 flex justify-between items-center border-b border-[#27272A] pb-6"> 
-                <div>
-                    <h2 class="text-3xl font-bold tracking-tight">Catalogue</h2>
-                    <p class="text-[#A1A1AA]">Découvrez et participez aux activités du campus</p>
-                </div>
-                <div class="user-actions flex gap-3">
-                    <button class="w-10 h-10 bg-[#0B0B0F] border border-[#27272A] rounded-xl flex items-center justify-center">🔔</button>
-                    <a href="profil.html" id="user-avatar" class="w-10 h-10 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-xs font-bold text-[#A78BFA]">JM</a>
-                </div>
+        <main class="flex-1 p-10 overflow-y-auto">
+            <div class="top-bar w-full mb-10 flex justify-between items-center"> 
+                <div><h2 class="text-3xl font-bold">Catalogue</h2><p class="text-[#A1A1AA]">Découvrez et participez aux activités</p></div>
+                <div class="user-actions flex gap-3"><button class="icon-btn">🔔</button><div class="user-avatar">JM</div></div>
             </div>
 
-            <!-- Recherche et Filtres -->
-            <div class="flex flex-col gap-6 mb-10">
-                <div class="relative w-full max-w-md">
-                    <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A1A1AA]"></i>
-                    <input type="text" id="search-input" placeholder="Rechercher un événement..." class="w-full bg-[#0B0B0F] border border-[#27272A] rounded-xl py-3 pl-12 pr-4 text-sm focus:border-[#A78BFA] outline-none transition">
+            <!-- Barre de Recherche et Filtres -->
+            <div class="flex flex-col gap-8 mb-10">
+                <div class="flex justify-between items-center">
+                    <div class="relative w-80">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A1A1AA]"></i>
+                        <input type="text" placeholder="Filtrer par nom..." class="w-full bg-[#18181B] border border-[#27272A] rounded-xl py-2.5 pl-10 pr-4 text-sm focus:border-[#A78BFA] outline-none">
+                    </div>
                 </div>
-                
                 <div class="flex gap-3 overflow-x-auto pb-2">
-                    <button class="filter-btn px-6 py-2 rounded-full bg-[#A78BFA] text-[#0B0B0F] font-bold text-xs transition">Tous</button>
-                    <button class="filter-btn px-6 py-2 rounded-full bg-[#0B0B0F] border border-[#27272A] text-[#A1A1AA] text-xs hover:border-[#A78BFA] transition">Concerts</button>
-                    <button class="filter-btn px-6 py-2 rounded-full bg-[#0B0B0F] border border-[#27272A] text-[#A1A1AA] text-xs hover:border-[#A78BFA] transition">Jam Sessions</button>
-                    <button class="filter-btn px-6 py-2 rounded-full bg-[#0B0B0F] border border-[#27272A] text-[#A1A1AA] text-xs hover:border-[#A78BFA] transition">Workshops</button>
+                    <button class="px-5 py-2 rounded-full bg-[#A78BFA] text-[#0B0B0F] font-bold text-xs">Tous</button>
+                    <button class="px-5 py-2 rounded-full bg-[#18181B] border border-[#27272A] text-[#A1A1AA] text-xs">Concert</button>
+                    <button class="px-5 py-2 rounded-full bg-[#18181B] border border-[#27272A] text-[#A1A1AA] text-xs">Jam Session</button>
                 </div>
-            </div>
+                <div class="flex gap-3 overflow-x-auto pb-2">
+                    <a href="Calendrier.html" class="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-[#A78BFA]/30 bg-[#A78BFA]/5 text-[#A78BFA] font-bold text-sm hover:bg-[#A78BFA]/10 transition-all">
+                        <i data-lucide="calendar-days" class="w-4 h-4"></i>
+                        Voir le calendrier des événements
+                    </a>
+                </div>
+            </div>           
 
-            <!-- Grille d'événements -->
+            <!-- Grille d'événements vide (Remplie par catalogue.js) -->
             <div id="event-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Rempli par catalogue.js -->
-                <div class="col-span-full py-20 text-center text-[#A1A1AA] animate-pulse">Chargement des événements...</div>
+                <p>Chargement...</p>
             </div>
-        </div>
-    </main>
-
+        </main>
+    </div>
     <script src="navigation.js"></script>
     <script src="catalogue.js"></script>
 </body>
