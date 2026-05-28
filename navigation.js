@@ -5,13 +5,13 @@ async function loadSidebar() {
     const currentPage = window.location.pathname.split("/").pop();
 
     const menuItems = [
-        { name: 'Accueil', icon: 'home', url: 'Accueil.html' },
-        { name: 'Catalogue', icon: 'calendar', url: 'Catalogue.html' },
-        { name: 'Réservations', icon: 'settings', url: 'Reservations.html' },
-        { name: 'Evénements', icon: 'music', url: 'Evenements.html' },
-        { name: user.is_logged ? `Profil (${user.prenom})` : 'Profil / Connexion', icon: 'user', url: 'Profil.html' },
-        { name: 'Notifications', icon: 'bell', url: 'Notifications.html' },
-        { name: 'Forums', icon: 'message-square', url: 'Forums.html' }
+        { name: 'Accueil', icon: 'home', url: 'accueil.html' },
+        { name: 'Catalogue', icon: 'calendar', url: 'catalogue.html' },
+        { name: 'Réservations', icon: 'settings', url: 'reservations.html' },
+        { name: 'Evénements', icon: 'music', url: 'evenements.html' },
+        { name: user.is_logged ? `Profil (${user.prenom})` : 'Profil / Connexion', icon: 'user', url: 'profil.html' },
+        { name: 'Notifications', icon: 'bell', url: 'notifications.html' },
+        { name: 'Forums', icon: 'message-square', url: 'forum.html' }
     ];
 
     navDiv.innerHTML = menuItems.map(item => `
