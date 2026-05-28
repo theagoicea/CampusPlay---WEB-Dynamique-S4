@@ -4,7 +4,7 @@ require_once 'configuration.php'; // Connexion BDD
 
 // 1. Sécurité : redirection si non connecté
 if (!isset($_SESSION['user_id'])) {
-    header("Location: authentification.php");
+    header("Location: b_authentification.php");
     exit();
 }
 
