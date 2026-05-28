@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Campus Melody - Sujet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen font-sans flex hidden" id="page-body">
+
+    <!-- BARRE LATÉRALE -->
+    <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col sticky top-0 h-screen overflow-y-auto">
+        <div class="px-6 py-8 border-b border-[#27272A]">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
+                <h1 class="text-sm font-bold text-[#F5F5F7] leading-tight">Campus Melody</h1>
+            </div>
+        </div>
+        <nav class="flex-1 px-3 py-4">
+            <p class="text-[10px] font-semibold text-[#A1A1AA] uppercase tracking-widest px-3 mb-3">Pages</p>
+            <div id="sidebar-nav" class="space-y-1"></div>
+        </nav>
+    </aside>
+
+    <!-- CONTENU PRINCIPAL -->
+    <main class="flex-1 overflow-y-auto px-8 py-10">
+        <div class="max-w-4xl mx-auto">
+            
+            <!-- En-tête injecté par JS -->
+            <div id="topic-header" class="mb-6 flex justify-between items-start"></div>
+
+            <!-- Message flash injecté par JS -->
+            <div id="flash-msg" class="mb-6 p-4 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm font-medium hidden"></div>
+
+            <!-- Liste des messages injectée par JS -->
+            <div id="messages-list" class="space-y-6 mb-8"></div>
+
+            <!-- Zone de réponse -->
+            <div id="reply-section"></div>
+
+        </div>
+    </main>
+
+    <script src="navigation.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            
+            // On récupère l'ID du sujet dans l'URL (ex: sujet.html?id=3)
+            const urlParams = new URLSearchParams(window.location.search);
+            const idForum = urlParams.get('id');
+
+            if (!idForum) {
+                window.location.href = 'forums.html';
+                return;
+            }
+
+            // --- FONCTION DE CHARGEMENT DES DONNÉES ---
+            async function loadTopic() {
+                try {
+                    const res = await fetch(`b_sujet.php?id=${idForum}`);
+                    const data = await res.json();
+
+                    if (!data.success) {
+                        window.location.href = data.redirect || 'authentification.html';
+                        return;
+                    }
+
+                    document.getElementById('page-body').classList.remove('hidden');
+                    document.title = `Campus Melody - ${data.topic.titre}`;
+
+                    const user = data.current_user;
+                    const topic = data.topic;
+
+                    // 1. Rendu de l'en-tête
+                    let headerHTML = `
+                        <div>
+                            <a href="forums.html" class="inline-flex items-center text-xs font-bold text-[#A78BFA] hover:underline mb-4">
+                                <i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Retour aux forums
+                            </a>
+                            <div class="flex items-center gap-3">
+                                <h2 class="text-3xl font-bold tracking-tight text-[#F5F5F7]">${topic.titre}</h2>
+                                ${topic.est_ferme == 1 ? `<span class="px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> Fermé</span>` : ''}
+                            </div>
+                            <div class="flex items-center gap-2 mt-3">
+                                <span class="text-[10px] px-2.5 py-1 rounded-md bg-[#27272A] text-[#A1A1AA] font-bold flex items-center gap-1.5">
+                                    ${topic.catInfo.icon} ${topic.catInfo.name}
+                                </span>
+                                <span class="text-xs text-[#A1A1AA]">
+                                    Créé par <span class="font-bold text-[#F5F5F7]">${topic.prenom} ${topic.nom}</span> le ${topic.date_formatee}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+
+                    // Actions Admin/Auteur
+                    if (user.role === 'Admin' || user.id == topic.id_createur) {
+                        headerHTML += `<div class="flex gap-2">`;
+                        if (topic.est_ferme == 0) {
+                            headerHTML += `<button onclick="performAction('close_topic', null, 'Fermer cette discussion ?')" class="p-2 bg-[#18181B] border border-[#27272A] text-[#F5F5F7] rounded-lg hover:border-amber-500 hover:text-amber-500 transition cursor-pointer" title="Verrouiller le sujet"><i data-lucide="lock" class="w-4 h-4"></i></button>`;
+                        }
+                        if (user.role === 'Admin') {
+                            headerHTML += `<button onclick="performAction('delete_topic', null, 'Supprimer ce sujet et tous ses messages ?')" class="p-2 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg hover:bg-rose-500/20 transition cursor-pointer" title="Supprimer le sujet"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
+                        }
+                        headerHTML += `</div>`;
+                    }
+                    document.getElementById('topic-header').innerHTML = headerHTML;
+
+                    // 2. Rendu des messages
+                    document.getElementById('messages-list').innerHTML = data.messages.map(msg => {
+                        let badge = '';
+                        if(msg.role === 'Admin') badge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-500 font-bold uppercase tracking-wider">Admin</span>`;
+                        else if(msg.id_auteur == topic.id_createur) badge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-[#A78BFA]/20 text-[#A78BFA] font-bold uppercase tracking-wider">Auteur</span>`;
+
+                        let actions = '';
+                        if(msg.id_auteur != user.id && msg.signale == 0) {
+                            actions += `<button onclick="performAction('report_msg', ${msg.id_message}, 'Signaler ce message ?')" class="text-[#A1A1AA] hover:text-amber-500 transition cursor-pointer" title="Signaler le message"><i data-lucide="flag" class="w-4 h-4"></i></button>`;
+                        } else if(msg.signale == 1) {
+                            actions += `<span class="text-rose-500 text-[10px] font-bold flex items-center gap-1" title="Message signalé"><i data-lucide="alert-triangle" class="w-3 h-3"></i> Signalé</span>`;
+                        }
+                        if(user.role === 'Admin') {
+                            actions += `<button onclick="performAction('delete_msg', ${msg.id_message}, 'Supprimer ce message ?')" class="text-[#A1A1AA] hover:text-rose-500 transition cursor-pointer ml-2" title="Supprimer"><i data-lucide="trash-2" class="w-4 h-4"></i></button>`;
+                        }
+
+                        let avatar = msg.photo_profil 
+                            ? `<img src="uploads/${msg.photo_profil}" class="w-full h-full object-cover">`
+                            : `<span class="text-sm font-bold text-white">${msg.initiales}</span>`;
+
+                        return `
+                        <div class="flex gap-4">
+                            <div class="shrink-0">
+                                <div class="w-12 h-12 rounded-full overflow-hidden border-2 ${msg.role === 'Admin' ? 'border-amber-500' : 'border-[#27272A]'} flex items-center justify-center bg-gradient-to-tr from-[#27272A] to-[#18181B]">
+                                    ${avatar}
+                                </div>
+                            </div>
+                            <div class="flex-1 bg-[#18181B] border ${msg.signale == 1 ? 'border-rose-500/50' : 'border-[#27272A]'} rounded-2xl rounded-tl-none p-5 relative group">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="text-sm font-bold text-[#F5F5F7]">${msg.prenom} ${msg.nom}</h4>
+                                        ${badge}
+                                        <span class="text-[10px] text-[#A1A1AA] ml-2">${msg.time_ago}</span>
+                                    </div>
+                                    <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        ${actions}
+                                    </div>
+                                </div>
+                                <div class="text-sm text-[#F5F5F7] whitespace-pre-wrap leading-relaxed">${msg.contenu}</div>
+                            </div>
+                        </div>`;
+                    }).join('');
+
+                    // 3. Rendu du formulaire de réponse
+                    const replySection = document.getElementById('reply-section');
+                    if (topic.est_ferme == 1) {
+                        replySection.innerHTML = `
+                            <div class="bg-[#0B0B0F] border border-[#27272A] rounded-2xl p-6 text-center">
+                                <i data-lucide="lock" class="w-8 h-8 text-[#A1A1AA] mx-auto mb-3"></i>
+                                <p class="text-sm font-bold text-[#F5F5F7]">Cette discussion est fermée.</p>
+                                <p class="text-xs text-[#A1A1AA] mt-1">Vous ne pouvez plus ajouter de nouvelle réponse.</p>
+                            </div>`;
+                    } else {
+                        replySection.innerHTML = `
+                            <div class="bg-[#0B0B0F] border-2 border-dashed border-[#A78BFA]/20 rounded-2xl p-6">
+                                <h4 class="text-sm font-bold mb-4">Ajouter une réponse</h4>
+                                <form id="reply-form">
+                                    <textarea name="contenu" required rows="4" placeholder="Tapez votre message ici..."
+                                              class="w-full bg-[#18181B] rounded-xl border border-[#27272A] p-4 text-sm text-[#F5F5F7] focus:outline-none focus:border-[#A78BFA]/50 placeholder-[#52525B] resize-none mb-4"></textarea>
+                                    <div class="flex justify-end">
+                                        <button type="submit" class="px-6 py-2.5 bg-[#A78BFA] text-[#0B0B0F] rounded-xl font-bold flex items-center justify-center text-sm cursor-pointer hover:bg-[#A78BFA]/90 transition shadow-lg shadow-[#A78BFA]/10">
+                                            Publier ma réponse
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>`;
+                        
+                        // Attacher l'événement au formulaire de réponse
+                        document.getElementById('reply-form').addEventListener('submit', async (e) => {
+                            e.preventDefault();
+                            const formData = new FormData(e.target);
+                            formData.append('action', 'add_reply');
+                            formData.append('id_forum', idForum);
+
+                            const res = await fetch('b_sujet.php', { method: 'POST', body: formData });
+                            const result = await res.json();
+                            if(result.success) {
+                                showFlash(result.message);
+                                loadTopic(); // Recharger les données instantanément
+                            }
+                        });
+                    }
+
+                    lucide.createIcons();
+
+                } catch (error) {
+                    console.error("Erreur de chargement :", error);
+                }
+            }
+
+            // --- FONCTION GLOBALE POUR LES ACTIONS (Boutons HTML) ---
+            window.performAction = async function(actionName, idMessage, confirmText) {
+                if(confirm(confirmText)) {
+                    const formData = new FormData();
+                    formData.append('action', actionName);
+                    formData.append('id_forum', idForum);
+                    if(idMessage) formData.append('id_message', idMessage);
+
+                    const res = await fetch('b_sujet.php', { method: 'POST', body: formData });
+                    const result = await res.json();
+                    
+                    if(result.success) {
+                        if(result.redirect) {
+                            window.location.href = result.redirect;
+                        } else {
+                            showFlash(result.message);
+                            loadTopic(); // On recharge juste le HTML de la page, sans rafraîchir le navigateur !
+                        }
+                    }
+                }
+            }
+
+            function showFlash(msg) {
+                const flash = document.getElementById('flash-msg');
+                flash.textContent = msg;
+                flash.classList.remove('hidden');
+                setTimeout(() => flash.classList.add('hidden'), 3000);
+            }
+
+            // Lancement initial
+            loadTopic();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Campus Melody - Mon Profil</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen font-sans flex hidden" id="page-body">
+
+    <!-- BARRE LATÉRALE (Gérée par navigation.js) -->
+    <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col sticky top-0 h-screen overflow-y-auto">
+        <div class="px-6 py-8 border-b border-[#27272A]">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
+                <h1 class="text-sm font-bold text-[#F5F5F7] leading-tight">Campus Melody</h1>
+            </div>
+        </div>
+        
+        <nav class="flex-1 px-3 py-4">
+            <p class="text-[10px] font-semibold text-[#A1A1AA] uppercase tracking-widest px-3 mb-3">Pages</p>
+            <!-- Menu injecté par JS -->
+            <div id="sidebar-nav" class="space-y-1"></div>
+        </nav>
+    </aside>
+
+    <!-- CONTENU PRINCIPAL -->
+    <main class="flex-1 overflow-y-auto px-8 py-10">
+        <div class="bg-[#18181B] rounded-3xl p-8 border border-[#27272A] max-w-4xl mx-auto">
+            
+            <!-- TopBar -->
+            <div class="flex justify-between items-center mb-8 border-b border-[#27272A] pb-4">
+                <div>
+                    <h3 class="text-2xl font-bold tracking-tight">Mon Profil</h3>
+                    <p class="text-sm text-[#A1A1AA]">Gérez vos informations et suivez vos activités</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <a href="notifications.html" class="w-9 h-9 bg-[#0B0B0F] border border-[#27272A] rounded-xl flex items-center justify-center text-sm cursor-pointer hover:bg-[#27272A] transition">🔔</a>
+                </div>
+            </div>
+            
+            <div class="grid lg:grid-cols-3 gap-6">
+                <!-- Carte Profil (Gauche) -->
+                <div class="bg-[#0B0B0F] border border-[#27272A] rounded-2xl p-6 flex flex-col items-center text-center space-y-4">
+                    <label class="relative group cursor-pointer">
+                        <div id="avatar-container" class="w-24 h-24 rounded-full overflow-hidden border-2 border-[#A78BFA] flex items-center justify-center bg-gradient-to-tr from-[#A78BFA] to-[#6D28D9]">
+                            <!-- Avatar injecté par JS -->
+                        </div>
+                    </label>
+                    <div>
+                        <h4 id="user-name" class="text-lg font-bold">...</h4>
+                        <span id="user-status" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#A78BFA]/10 text-[#A78BFA] border border-[#A78BFA]/20 mt-1">
+                            ...
+                        </span>
+                    </div>
+                    <div class="w-full space-y-3 pt-2">
+                        <div class="text-left">
+                            <label class="text-[10px] uppercase tracking-wider text-[#52525B] font-bold">Adresse mail</label>
+                            <div id="user-email" class="mt-1 w-full h-9 bg-[#18181B] border border-[#27272A] rounded-lg px-3 flex items-center text-xs text-[#A1A1AA]">...</div>
+                        </div>
+                        <div class="text-left">
+                            <label class="text-[10px] uppercase tracking-wider text-[#52525B] font-bold">Mot de passe</label>
+                            <div class="mt-1 w-full h-9 bg-[#18181B] border border-[#27272A] rounded-lg px-3 flex items-center text-xs text-[#A1A1AA]">••••••••••</div>
+                        </div>
+                    </div>
+                    <div class="w-full pt-2 border-t border-[#27272A] space-y-2">
+                        <a href="modifier-profil.html" class="w-full block py-2 bg-[#18181B] border border-[#27272A] text-xs rounded-lg hover:border-[#A78BFA]/50 transition cursor-pointer text-center text-[#F5F5F7]">Modifier mon profil</a>
+                        <!-- BOUTON DÉCONNEXION -->
+                        <button id="btn-logout" class="w-full block py-2 text-xs text-rose-400 hover:text-rose-300 transition cursor-pointer text-center">Déconnexion</button>
+                    </div>
+                </div>
+        
+                <!-- Zone Onglets (Droite) -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-[#0B0B0F] border border-[#27272A] rounded-2xl overflow-hidden">
+                        
+                        <!-- Boutons des Onglets -->
+                        <div class="flex border-b border-[#27272A]">
+                            <button onclick="switchTab('reservations')" id="btn-reservations" class="tab-btn flex-1 py-3 text-xs font-bold transition cursor-pointer text-[#A78BFA] border-b-2 border-[#A78BFA]">Réservations</button>
+                            <button onclick="switchTab('my-events')" id="btn-my-events" class="tab-btn flex-1 py-3 text-xs font-bold transition cursor-pointer text-[#A1A1AA] hover:text-[#F5F5F7] border-b-2 border-transparent">Mes événements</button>
+                            <button onclick="switchTab('past-events')" id="btn-past-events" class="tab-btn flex-1 py-3 text-xs font-bold transition cursor-pointer text-[#A1A1AA] hover:text-[#F5F5F7] border-b-2 border-transparent">Événements passés</button>
+                        </div>
+                        
+                        <div class="p-5 space-y-3 relative min-h-[300px]">
+                            <div id="tab-reservations" class="tab-content space-y-3"></div>
+                            <div id="tab-my-events" class="tab-content space-y-3 hidden"></div>
+                            <div id="tab-past-events" class="tab-content space-y-3 hidden"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Inclusion du script de la barre latérale -->
+    <script src="navigation.js"></script>
+
+    <script>
+        // Fonction utilitaire pour récupérer les icônes
+        function getIcon(type) {
+            const icons = {
+                'concert': '🎸', 'jam': '🎷', 'open-mic': '🎤', 'dj-night': '💿', 'workshop': '🎧',
+                'Studio': '🎹', 'Instrument': '🥁', 'Matériel': '🔌', 'Salle': '🏠'
+            };
+            return icons[type] || '📅';
+        }
+
+        // Chargement des données au démarrage
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('b_profil.php');
+                const data = await response.json();
+
+                // Redirection si non connecté
+                if (!data.success && data.error === 'not_logged_in') {
+                    window.location.href = 'authentification.html';
+                    return;
+                }
+
+                // On affiche le corps de la page une fois vérifié
+                document.getElementById('page-body').classList.remove('hidden');
+
+                // 1. Remplissage des infos utilisateur
+                document.getElementById('user-name').textContent = `${data.user.prenom} ${data.user.nom}`;
+                document.getElementById('user-email').textContent = data.user.email;
+                document.getElementById('user-status').textContent = data.user.est_membre_asso ? 'Membre' : 'Visiteur';
+
+                const avatarContainer = document.getElementById('avatar-container');
+                if (data.user.photo_profil) {
+                    avatarContainer.innerHTML = `<img src="uploads/${data.user.photo_profil}" alt="Profil" class="w-full h-full object-cover" />`;
+                } else {
+                    avatarContainer.innerHTML = `<span class="text-3xl font-bold text-white">${data.user.initiales}</span>`;
+                }
+
+                // 2. Remplissage des réservations
+                const resContainer = document.getElementById('tab-reservations');
+                if (data.reservations.length === 0) {
+                    resContainer.innerHTML = '<p class="text-sm text-[#A1A1AA] text-center pt-8">Aucune réservation à venir.</p>';
+                } else {
+                    resContainer.innerHTML = data.reservations.map(res => `
+                        <div class="flex justify-between items-center p-4 bg-[#18181B] rounded-xl border border-[#27272A]">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 bg-[#27272A] rounded-lg flex items-center justify-center text-lg">${getIcon(res.type_ressource)}</div>
+                                <div>
+                                    <p class="text-sm font-medium">${res.nom}</p>
+                                    <p class="text-[10px] text-[#A1A1AA]">${res.date_formatee}</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] px-2 py-1 rounded-md font-bold ${(res.statut === 'Approuvée' || res.statut === 'Confirmé') ? 'bg-green-500/10 text-green-400' : 'bg-amber-500/10 text-amber-400'}">
+                                ${res.statut}
+                            </span>
+                        </div>
+                    `).join('');
+                }
+
+                // 3. Remplissage des événements à venir
+                const evContainer = document.getElementById('tab-my-events');
+                if (data.myEvents.length === 0) {
+                    evContainer.innerHTML = '<p class="text-sm text-[#A1A1AA] text-center pt-8">Vous n\'êtes inscrit à aucun événement futur.</p>';
+                } else {
+                    evContainer.innerHTML = data.myEvents.map(ev => `
+                        <div class="flex justify-between items-center p-4 bg-[#18181B] rounded-xl border border-[#27272A]">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 bg-[#27272A] rounded-lg flex items-center justify-center text-lg">${getIcon(ev.type_evenement)}</div>
+                                <div>
+                                    <p class="text-sm font-medium">${ev.titre}</p>
+                                    <p class="text-[10px] text-[#A1A1AA]">${ev.date_formatee}</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] px-2 py-1 rounded-md font-bold ${ev.statut_inscription === 'Confirmé' ? 'bg-green-500/10 text-green-400' : 'bg-amber-500/10 text-amber-400'}">
+                                ${ev.statut_inscription}
+                            </span>
+                        </div>
+                    `).join('');
+                }
+
+                // 4. Remplissage des événements passés
+                const pastEvContainer = document.getElementById('tab-past-events');
+                if (data.pastEvents.length === 0) {
+                    pastEvContainer.innerHTML = '<p class="text-sm text-[#A1A1AA] text-center pt-8">Aucun événement passé trouvé.</p>';
+                } else {
+                    pastEvContainer.innerHTML = data.pastEvents.map(ev => `
+                        <div class="flex justify-between items-center p-4 bg-[#18181B] rounded-xl border border-[#27272A]">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 bg-[#27272A] rounded-lg flex items-center justify-center text-lg">${getIcon(ev.type_evenement)}</div>
+                                <div>
+                                    <p class="text-sm font-medium">${ev.titre}</p>
+                                    <p class="text-[10px] text-[#A1A1AA]">${ev.date_formatee}</p>
+                                </div>
+                            </div>
+                            <span class="text-[10px] px-2 py-1 rounded-md font-bold bg-[#27272A] text-[#71717A]">Terminé</span>
+                        </div>
+                    `).join('');
+                }
+
+                // Affichage des icônes après rendu DOM
+                lucide.createIcons();
+
+            } catch (error) {
+                console.error("Erreur lors du chargement des données :", error);
+            }
+        });
+
+        // GESTION DE LA DÉCONNEXION
+        document.getElementById('btn-logout').addEventListener('click', async function() {
+            try {
+                const response = await fetch('b_deconnexion.php');
+                const result = await response.json();
+                if (result.success) {
+                    window.location.href = 'authentification.html';
+                }
+            } catch (error) {
+                console.error('Erreur lors de la déconnexion:', error);
+            }
+        });
+
+        // GESTION DES ONGLETS
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('text-[#A78BFA]', 'border-[#A78BFA]');
+                el.classList.add('text-[#A1A1AA]', 'border-transparent');
+            });
+            let activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('text-[#A1A1AA]', 'border-transparent');
+            activeBtn.classList.add('text-[#A78BFA]', 'border-[#A78BFA]');
+        }
+    </script>
+</body>
+</html>
