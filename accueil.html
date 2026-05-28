@@ -2,51 +2,94 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campus Melody - Accueil</title>
     <link rel="stylesheet" href="Style.css">
+    <!-- Importation de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Importation de la librairie d'icônes Lucide -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen">
+    
     <div class="flex min-h-screen">
+        <!-- BARRE LATÉRALE (Sidebar) -->
         <aside class="w-64 bg-[#18181B] border-r border-[#27272A] flex flex-col h-screen sticky top-0">
             <div class="p-8 flex items-center gap-3">
                 <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
                 <h1 class="text-sm font-bold">Campus Melody</h1>
             </div>
+            
             <nav class="flex-1 px-3">
-                <p class="text-[10px] text-[#A1A1AA] uppercase px-3 mb-4">Pages</p>
+                <p class="text-[10px] text-[#A1A1AA] uppercase px-3 mb-4 tracking-widest font-semibold">Pages</p>
+                
+                <!-- ID CRUCIAL : navigation.js injecte le menu ici -->
                 <div id="sidebar-nav" class="space-y-1"></div>
+                
             </nav>
         </aside>
 
+        <!-- CONTENU PRINCIPAL -->
         <main class="flex-1 p-10">
+            <!-- Barre du haut -->
             <div class="top-bar w-full mb-8 flex justify-between items-center"> 
-                <div><h2 class="text-3xl font-bold">Accueil</h2><p class="text-[#A1A1AA]">Ravi de vous revoir 👋</p></div>
-                <div class="user-actions flex gap-3"><button class="icon-btn">🔔</button><div class="user-avatar">JM</div></div>
+                <div>
+                    <h2 class="text-3xl font-bold tracking-tight">Accueil</h2>
+                    <p class="text-[#A1A1AA]">Ravi de vous revoir 👋</p>
+                </div>
+                <div class="user-actions flex gap-3">
+                    <a href="notifications.html" class="w-10 h-10 bg-[#18181B] border border-[#27272A] rounded-xl flex items-center justify-center hover:bg-[#27272A] transition">🔔</a>
+                    <a href="profil.html" class="w-10 h-10 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-xs font-bold text-[#A78BFA] hover:bg-[#A78BFA]/30 transition">
+                        JM
+                    </a>
+                </div>
             </div>
 
-            <div class="dashboard-container">
-                <a href="catalogue.html" class="card">
-                    <div class="card-header"><div class="card-icon icon-event">📅</div><span class="badge">ÉVÉNEMENTS</span></div>
-                    <div><h5>Catalogue</h5><p>Parcourir et s'inscrire aux activités</p></div>
+            <!-- Grille du Dashboard -->
+            <div class="dashboard-container grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Carte Catalogue -->
+                <a href="Catalogue.html" class="card p-6 bg-[#18181B] border border-[#27272A] rounded-2xl hover:border-[#A78BFA]/50 transition group">
+                    <div class="card-header flex justify-between items-start mb-4">
+                        <div class="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center text-2xl">📅</div>
+                        <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest bg-blue-500/10 px-2 py-1 rounded-md">ÉVÉNEMENTS</span>
+                    </div>
+                    <div>
+                        <h5 class="text-lg font-bold group-hover:text-[#A78BFA] transition">Catalogue</h5>
+                        <p class="text-sm text-[#A1A1AA] mt-1">Parcourir et s'inscrire aux activités du campus</p>
+                    </div>
                 </a>
-                <a href="creation_evenement.html" class="card card-create">
-                    <div class="card-icon" style="background: rgba(167, 139, 250, 0.2);">✨</div>
-                    <div><h5>Créer un événement</h5><p>Proposer un concert, jam, workshop...</p></div>
-                    <button class="btn-create">+ Nouvel événement</button>
+
+                <!-- Carte Création (Style spécial) -->
+                <a href="creation_evenement.html" class="card p-6 bg-gradient-to-br from-[#2E1065] to-[#1E1B4B] border border-[#A78BFA]/30 rounded-2xl hover:border-[#A78BFA] transition group">
+                    <div class="w-12 h-12 bg-[#A78BFA]/20 rounded-xl flex items-center justify-center text-2xl mb-4">✨</div>
+                    <div>
+                        <h5 class="text-lg font-bold">Créer un événement</h5>
+                        <p class="text-sm text-[#A1A1AA] mt-1">Proposer un concert, une jam ou un workshop...</p>
+                    </div>
+                    <button class="mt-6 w-full py-2 bg-[#A78BFA] text-[#0B0B0F] text-sm font-bold rounded-xl hover:bg-[#A78BFA]/90 transition">
+                        + Nouvel événement
+                    </button>
                 </a>
-                <a href="reservations.html" class="card">
-                    <div class="card-icon icon-room">🎹</div>
-                    <h5>Salles</h5><p>Réserver un studio de répétition</p>
+
+                <!-- Carte Salles (Lien vers PHP) -->
+                <a href="reservations.php?tab=salles" class="card p-6 bg-[#18181B] border border-[#27272A] rounded-2xl hover:border-[#A78BFA]/50 transition group">
+                    <div class="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center text-2xl mb-4">🎹</div>
+                    <h5 class="text-lg font-bold group-hover:text-[#A78BFA] transition">Salles</h5>
+                    <p class="text-sm text-[#A1A1AA] mt-1">Réserver un studio de répétition ou une salle de cours</p>
                 </a>
-                <a href="reservations.html" class="card">
-                    <div class="card-icon icon-gear">🎤</div>
-                    <h5>Matériel</h5><p>Emprunter du matériel audio</p>
+
+                <!-- Carte Matériel (Lien vers PHP) -->
+                <a href="reservations.php?tab=materiel" class="card p-6 bg-[#18181B] border border-[#27272A] rounded-2xl hover:border-[#A78BFA]/50 transition group">
+                    <div class="w-12 h-12 bg-amber-500/10 rounded-xl flex items-center justify-center text-2xl mb-4">🎤</div>
+                    <h5 class="text-lg font-bold group-hover:text-[#A78BFA] transition">Matériel</h5>
+                    <p class="text-sm text-[#A1A1AA] mt-1">Emprunter du matériel audio, micros ou instruments</p>
                 </a>
+
             </div>
         </main>
     </div>
+
     <script src="navigation.js"></script>
 </body>
 </html>
