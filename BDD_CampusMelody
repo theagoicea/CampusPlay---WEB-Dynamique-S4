@@ -173,3 +173,15 @@ CREATE TABLE message_forum (
 );
 
 
+-- pour créer 3 evenement
+
+-- 1. On crée un utilisateur organisateur (obligatoire pour les événements)
+INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, role, est_membre_asso, statut_adhesion) 
+VALUES ('Martin', 'Julien', 'julien@campus.fr', 'root', 'Organisateur', TRUE, 'Validé');
+
+-- 2. On crée 3 événements liés à cet organisateur (on suppose que son id est 1)
+INSERT INTO evenement (titre, description, date_debut, date_fin, lieu, capacite_max, type_evenement, est_reserve_membres, besoin_validation_inscription, statut_validation, id_organisateur)
+VALUES 
+('Rock au Campus', 'Le grand concert de fin d\'année avec les meilleurs groupes.', '2024-06-18 20:00:00', '2024-06-18 23:30:00', 'Amphi Central', 200, 'CONCERT', FALSE, FALSE, 'Validé', 1),
+('Initiation Mixage & M.A.O', 'Découvrez la production musicale sur Ableton.', '2024-06-22 14:00:00', '2024-06-22 17:00:00', 'Studio M.A.O', 15, 'WORKSHOP', TRUE, TRUE, 'Validé', 1),
+('Jazz & Blues Impro', 'Rejoignez-nous pour une session d\'improvisation totale.', '2024-12-12 19:00:00', '2024-12-12 23:00:00', 'Studio A', 100, 'JAM SESSION', FALSE, FALSE, 'Validé', 1);
