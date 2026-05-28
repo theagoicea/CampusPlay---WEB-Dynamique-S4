@@ -1,5 +1,5 @@
 
-/* --- VARIABLES DE COULEURS (tirées de ton code React) --- */
+/* --- VARIABLES DE COULEURS --- */
 :root {
     --bg-dark: #0B0B0F;
     --bg-card: #18181B;
