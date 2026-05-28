@@ -186,3 +186,10 @@ VALUES
 ('Rock au Campus', 'Le grand concert de fin d\'année avec les meilleurs groupes.', '2024-06-18 20:00:00', '2024-06-18 23:30:00', 'Amphi Central', 200, 'CONCERT', FALSE, FALSE, 'Validé', 1),
 ('Initiation Mixage & M.A.O', 'Découvrez la production musicale sur Ableton.', '2024-06-22 14:00:00', '2024-06-22 17:00:00', 'Studio M.A.O', 15, 'WORKSHOP', TRUE, TRUE, 'Validé', 1),
 ('Jazz & Blues Impro', 'Rejoignez-nous pour une session d\'improvisation totale.', '2024-12-12 19:00:00', '2024-12-12 23:00:00', 'Studio A', 100, 'JAM SESSION', FALSE, FALSE, 'Validé', 1);
+
+-- 3. On crée 4 ressources
+INSERT INTO ressource (nom, description, type_ressource, statut_actuel) VALUES 
+('Studio A', 'Grand studio avec piano', 'Studio', 'Disponible'),
+('Studio B', 'Studio batterie', 'Studio', 'Disponible'),
+('Micro Shure SM58', 'Micro chant', 'Matériel', 'Disponible'),
+('Guitare Fender', 'Guitare électrique', 'Instrument', 'Disponible');
