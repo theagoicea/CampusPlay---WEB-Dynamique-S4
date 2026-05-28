@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Campus Melody - Calendrier</title>
+    <link rel="stylesheet" href="Style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen">
+    <div class="flex min-h-screen">
+        <!-- SIDEBAR -->
+        <aside class="w-64 bg-[#18181B] border-r border-[#27272A] flex flex-col h-screen sticky top-0">
+            <div class="p-8 flex items-center gap-3">
+                <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
+                <h1 class="text-sm font-bold">Campus Melody</h1>
+            </div>
+            <nav class="flex-1 px-3"><div id="sidebar-nav" class="space-y-1"></div></nav>
+        </aside>
+
+        <main class="flex-1 p-10 overflow-y-auto">
+            <div class="top-bar w-full mb-6 flex justify-between items-center"> 
+                <div>
+                    <h2 class="text-3xl font-bold">Calendrier des événements</h2>
+                    <p class="text-[#A1A1AA]">Vue mensuelle de la programmation</p>
+                </div>
+                <div class="user-actions flex gap-3"><button class="icon-btn">🔔</button><div class="user-avatar">JM</div></div>
+            </div>
+
+            <a href="Catalogue.html" class="text-[#A78BFA] text-sm hover:underline flex items-center gap-2 mb-8">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Retour au catalogue
+            </a>
+
+            <!-- CADRE DU CALENDRIER -->
+            <div class="w-full bg-[#18181B] border border-[#27272A] rounded-3xl p-8">
+                <!-- Navigation du Mois -->
+                <div class="flex justify-between items-center mb-12">
+                    <div class="flex gap-4">
+                        <button id="prevMonth" class="w-10 h-10 rounded-xl bg-[#27272A] flex items-center justify-center hover:bg-[#A78BFA] hover:text-[#0B0B0F] transition-all">
+                            <i data-lucide="chevron-left"></i>
+                        </button>
+                        <button id="nextMonth" class="w-10 h-10 rounded-xl bg-[#27272A] flex items-center justify-center hover:bg-[#A78BFA] hover:text-[#0B0B0F] transition-all">
+                            <i data-lucide="chevron-right"></i>
+                        </button>
+                    </div>
+                    <h3 class="text-3xl font-bold tracking-tight" id="monthDisplay">Octobre 2026</h3>
+                    <div class="w-20"></div> <!-- Spacer pour l'équilibre visuel -->
+                </div>
+
+                <!-- En-têtes Jours -->
+                <div class="grid grid-cols-7 gap-4 mb-6">
+                    <div class="text-center text-[11px] font-black text-[#52525B] uppercase tracking-[0.2em]">Lun</div>
+                    <div class="text-center text-[11px] font-black text-[#52525B] uppercase tracking-[0.2em]">Mar</div>
+                    <div class="text-center text-[11px] font-black text-[#52525B] uppercase tracking-[0.2em]">Mer</div>
+                    <div class="text-center text-[11px] font-black text-[#52525B] uppercase tracking-[0.2em]">Jeu</div>
+                    <div class="text-center text-[11px] font-black text-[#52525B] uppercase tracking-[0.2em]">Ven</div>
+                    <div class="text-center text-[11px] font-black text-[#52525B] uppercase tracking-[0.2em]">Sam</div>
+                    <div class="text-center text-[11px] font-black text-[#52525B] uppercase tracking-[0.2em]">Dim</div>
+                </div>
+
+                <!-- Grille des Jours -->
+                <div id="calendarGrid" class="grid grid-cols-7 gap-4">
+                    <!-- Rempli par calendrier.js -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="navigation.js"></script>
+    <script src="calendrier.js"></script>
+</body>
+</html>
