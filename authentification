@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <nav class="flex-1 px-3 py-4">
                 <p class="text-[10px] font-semibold text-[#A1A1AA] uppercase tracking-widest px-3 mb-3">Pages</p>
                 <div class="space-y-1">
-                    <a href="Accueil.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                    <a href="accueil.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
                         <i data-lucide="home" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Accueil</span>
                     </a>
 
@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </a>
 
                     <a href="evenements.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
-                        <i data-lucide="music" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Evénements</span>
+                        <i data-lucide="music" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Événements</span>
                     </a>
 
                     <!-- Condition Profil ou Authentification -->
@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </a>
                     <?php else: ?>
                         
-                        <a href="Authentification.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left bg-[#A78BFA] text-[#0B0B0F] font-bold">
+                        <a href="authentification.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left bg-[#A78BFA] text-[#0B0B0F] font-bold">
                             <i data-lucide="user" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Authentification</span>
                         </a>
                     <?php endif; ?>
@@ -106,13 +106,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <!-- Condition Admin -->
                     <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 'Admin'): ?>
-                        <a href="admin.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                        <a href="tableau_bord_admin.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
                             <i data-lucide="layout-grid" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Tableau de bord Admin</span>
                         </a>
                     <?php endif; ?>
 
-                    <a href="forums.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
-                        <i data-lucide="message-square" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Forums</span>
+                    <a href="forum.php" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all cursor-pointer text-left text-[#A1A1AA] hover:text-[#F5F5F7] hover:bg-[#27272A]">
+                        <i data-lucide="message-square" class="w-4 h-4 shrink-0"></i><span class="text-sm font-medium">Forum</span>
                     </a>
                 </div>
             </nav>
