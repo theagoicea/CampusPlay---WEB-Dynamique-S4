@@ -114,10 +114,9 @@
                 const response = await fetch(`b_forums.php?cat=${encodeURIComponent(cat)}&search=${encodeURIComponent(search)}`);
                 const data = await response.json();
 
-                if (!data.success && data.error === 'not_logged_in') {
-                    window.location.href = 'b_authentification.php';
-                    return;
-                }
+                if (!data.is_logged_in) {
+					document.querySelector('a[href="creer-sujet.html"]').classList.add('hidden');
+				}
 
                 document.getElementById('page-body').classList.remove('hidden');
 
