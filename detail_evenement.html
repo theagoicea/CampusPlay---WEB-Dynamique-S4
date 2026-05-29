@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Campus Melody - Détail</title>
+    <link rel="stylesheet" href="Style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen">
+    <div class="flex min-h-screen">
+        <aside class="w-64 bg-[#18181B] border-r border-[#27272A] flex flex-col h-screen sticky top-0">
+            <div class="p-8 flex items-center gap-3">
+                <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
+                <h1 class="text-sm font-bold">Campus Melody</h1>
+            </div>
+            <nav class="flex-1 px-3"><div id="sidebar-nav" class="space-y-1"></div></nav>
+        </aside>
+
+        <main class="flex-1 p-10 overflow-y-auto">
+            <a href="catalogue.html" class="text-[#A78BFA] text-sm hover:underline flex items-center gap-2 mb-8">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Retour au catalogue
+            </a>
+
+            <div id="loader" class="text-center py-20 text-[#A1A1AA]">Chargement des détails...</div>
+
+            <div id="content" class="hidden max-w-4xl mx-auto space-y-8">
+                <!-- BANNIÈRE -->
+                <div class="relative overflow-hidden rounded-3xl bg-[#18181B] border border-[#27272A] p-10">
+                    <div id="type-badge" class="absolute top-6 right-6 px-4 py-1.5 rounded-full bg-[#A78BFA] text-[#0B0B0F] text-[10px] font-black uppercase tracking-widest"></div>
+                    
+                    <div class="space-y-6">
+                        <h3 id="title" class="text-5xl font-black italic"></h3>
+                        <p id="description" class="text-[#A1A1AA] text-lg leading-relaxed"></p>
+                        <p class="text-sm">Organisé par <span id="organizer" class="text-[#A78BFA] font-bold"></span></p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-[#27272A]">
+                            <div class="flex items-center gap-3"><i data-lucide="calendar" class="w-5 h-5 text-[#A78BFA]"></i><span id="date"></span></div>
+                            <div class="flex items-center gap-3"><i data-lucide="clock" class="w-5 h-5 text-[#A78BFA]"></i><span id="time"></span></div>
+                            <div class="flex items-center gap-3"><i data-lucide="map-pin" class="w-5 h-5 text-[#A78BFA]"></i><span id="location"></span></div>
+                        </div>
+
+                        <div class="flex gap-3 pt-2">
+                            <span id="badge-access" class="px-3 py-1 rounded-md text-[10px] font-bold"></span>
+                            <span id="badge-validation" class="px-3 py-1 rounded-md text-[10px] font-bold"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARTE DE RÉSERVATION -->
+                <div class="bg-[#18181B] border border-[#27272A] rounded-3xl p-8 flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div class="flex-1">
+                        <p class="text-[#A1A1AA] text-sm mb-1">Disponibilité des places</p>
+                        <h4 class="text-2xl font-bold"><span id="restantes">0</span> places restantes <span class="text-sm font-normal text-[#52525B]">(sur <span id="total">0</span> au total)</span></h4>
+                        <div class="w-full h-2 bg-[#27272A] rounded-full mt-4 overflow-hidden">
+                            <div id="progress" class="h-full bg-[#A78BFA] transition-all duration-1000" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <button id="btn-action" class="px-10 py-4 bg-[#A78BFA] text-[#0B0B0F] font-black rounded-2xl hover:scale-105 transition-all shadow-xl shadow-[#A78BFA]/10">
+                        Réserver ma place
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="navigation.js"></script>
+    <script src="detail_evenement.js"></script>
+</body>
+</html>
