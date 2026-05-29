@@ -14,13 +14,11 @@
 </head>
 <body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen font-sans flex">
 
-    <!-- SIDEBAR (Remplie par navigation.js) -->
-    <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col sticky top-0 h-screen overflow-y-auto">
-        <div class="px-6 py-8 border-b border-[#27272A]">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
-                <h1 class="text-sm font-bold leading-tight text-[#F5F5F7]">Campus Melody</h1>
-            </div>
+    <!-- SIDEBAR -->
+    <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col h-screen sticky top-0">
+        <div class="px-6 py-8 border-b border-[#27272A] flex items-center gap-3">
+            <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
+            <h1 class="text-sm font-bold leading-tight">Campus Melody</h1>
         </div>
         <nav class="flex-1 px-3 py-4">
             <p class="text-[10px] font-semibold text-[#A1A1AA] uppercase tracking-widest px-3 mb-3">Pages</p>
@@ -28,21 +26,20 @@
         </nav>
     </aside>
 
-    <!-- CONTENU PRINCIPAL -->
     <main class="flex-1 overflow-y-auto px-8 py-10">
-        <!-- Boîte Grise principale (Style identique au profil) -->
+        <!-- Boîte Grise principale -->
         <div class="bg-[#18181B] rounded-3xl p-8 border border-[#27272A] max-w-6xl mx-auto shadow-xl">
             
-            <!-- TopBar -->
+            <!-- TOPBAR -->
             <div class="flex justify-between items-center mb-8 border-b border-[#27272A] pb-6">
                 <div>
-                    <h3 class="text-2xl font-bold tracking-tight">Tableau de bord Admin</h3>
-                    <p class="text-sm text-[#A1A1AA]">Supervision et gestion des demandes</p>
+                    <h3 class="text-2xl font-bold tracking-tight">Tableau de Bord Admin</h3>
+                    <p class="text-sm text-[#A1A1AA]">Supervision globale</p>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <a href="notifications.html" class="w-10 h-10 bg-[#0B0B0F] border border-[#27272A] rounded-xl flex items-center justify-center hover:bg-[#27272A] transition">🔔</a>
-                    <a href="profil.html" class="w-10 h-10 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-[11px] font-bold text-[#A78BFA] hover:bg-[#A78BFA]/30 transition shadow-lg shadow-[#A78BFA]/5">
-                        <?= $initiales ?>
+                    <a href="notifications.html" class="w-9 h-9 bg-[#0B0B0F] border border-[#27272A] rounded-xl flex items-center justify-center text-sm hover:bg-[#27272A] transition">🔔</a>
+                    <a href="profil.html" id="user-avatar-link" class="w-10 h-10 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-[11px] font-bold text-[#A78BFA] hover:bg-[#A78BFA]/30 transition shadow-lg shadow-[#A78BFA]/5">
+                        --
                     </a>
                 </div>
             </div>
@@ -78,7 +75,6 @@
                                 <!-- En-tête de ligne cliquable -->
                                 <div class="flex justify-between items-center p-4 cursor-pointer" onclick="toggleRequest('<?= $req['id'] ?>')">
                                     <div class="flex items-center gap-4">
-                                        <!-- BADGE DYNAMIQUE SELON LE TYPE -->
                                         <span class="text-[9px] px-2 py-1 rounded font-bold border 
                                             <?php 
                                                 if($req['type'] === 'inscription') echo 'bg-violet-500/10 text-violet-400 border-violet-500/20';
@@ -99,7 +95,6 @@
                                 <div class="detail-section px-4 pb-5 border-t border-[#27272A] pt-4 bg-[#0B0B0F]/30">
                                     <p class="text-xs text-[#A1A1AA] mb-5 leading-relaxed"><?= htmlspecialchars($req['detail']) ?></p>
                                     <form method="POST" class="flex gap-3">
-                                        <!-- Champs cachés pour envoyer les infos au PHP -->
                                         <input type="hidden" name="item_id" value="<?= $req['id'] ?>">
                                         <input type="hidden" name="item_type" value="<?= $req['type'] ?>">
                                         
@@ -117,14 +112,14 @@
 
     <script src="navigation.js"></script>
     <script>
-        // Fonction pour ouvrir/fermer les lignes de demandes
+        // FONCTION POUR OUVRIR/FERMER LES DEMANDES
         function toggleRequest(id) {
             const row = document.getElementById('req-' + id);
             if(row) {
                 row.classList.toggle('expanded');
             }
         }
-        
+
         // Initialisation des icônes au chargement
         window.addEventListener('DOMContentLoaded', () => {
             if(window.lucide) {
