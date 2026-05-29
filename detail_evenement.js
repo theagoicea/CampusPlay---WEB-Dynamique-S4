@@ -20,7 +20,11 @@ async function loadEvent() {
         // Gestion Dates et Heures
         const dD = new Date(event.date_debut.replace(' ', 'T'));
         const dF = new Date(event.date_fin.replace(' ', 'T'));
-        document.getElementById('date').innerText = dD.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+        document.getElementById('date').innerText = dD.toLocaleDateString('fr-FR', { 
+            day: 'numeric', 
+            month: 'long', 
+            year: 'numeric'  // <-- On ajoute l'année ici
+        });        
         document.getElementById('time').innerText = `${dD.getHours()}h${dD.getMinutes().toString().padStart(2, '0')} - ${dF.getHours()}h${dF.getMinutes().toString().padStart(2, '0')}`;
 
         // Accès (Membres / Libre)
@@ -86,6 +90,21 @@ async function loadEvent() {
             btnReserve.disabled = false;
         }
     };
+
+
+    if (event.image_url) {
+        // Si tu as un élément img id="event-image" dans ton HTML
+        const imgElement = document.getElementById('event-image');
+        if (imgElement) imgElement.src = event.image_url;
+        
+        // Ou si tu veux mettre l'image en fond de bannière
+        const banner = document.getElementById('event-banner'); // la div de bannière
+        if (banner) {
+            banner.style.backgroundImage = `linear-gradient(to bottom, rgba(11,11,15,0.2), #0B0B0F), url('${event.image_url}')`;
+            banner.style.backgroundSize = 'cover';
+            banner.style.backgroundPosition = 'center';
+        }
+    }
 }
 
 document.addEventListener('DOMContentLoaded', loadEvent);
