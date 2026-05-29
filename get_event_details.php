@@ -24,7 +24,7 @@ try {
     }
 
     // Calcul des places restantes (Capacité - Inscriptions confirmées)
-    $sql_count = "SELECT COUNT(*) FROM inscription WHERE id_evenement = :id AND statut_inscription = 'Confirmé'";
+$sql_count = "SELECT COUNT(*) FROM inscription WHERE id_evenement = :id AND statut_inscription != 'Annulé'";
     $stmt_count = $pdo->prepare($sql_count);
     $stmt_count->execute(['id' => $id]);
     $inscrits = $stmt_count->fetchColumn();
