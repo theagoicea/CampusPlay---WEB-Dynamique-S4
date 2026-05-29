@@ -52,6 +52,40 @@ async function loadEvent() {
 
         lucide.createIcons();
     } catch (e) { console.error(e); }
+
+
+    // --- GESTION DU CLIC SUR RÉSERVER ---
+    const btnReserve = document.getElementById('btn-action');
+    
+    btnReserve.onclick = async () => {
+        // Désactiver le bouton pour éviter les doubles clics
+        btnReserve.disabled = true;
+        btnReserve.innerText = "Traitement...";
+
+        const formData = new FormData();
+        formData.append('id_evenement', id);
+
+        try {
+            const response = await fetch('inscription_event.php', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                alert("Succès : " + result.message);
+                // On recharge la page pour mettre à jour les compteurs de places
+                window.location.reload();
+            } else {
+                alert("Erreur : " + result.error);
+                btnReserve.disabled = false;
+                btnReserve.innerText = "Réserver ma place";
+            }
+        } catch (error) {
+            console.error("Erreur réservation:", error);
+            btnReserve.disabled = false;
+        }
+    };
 }
 
 document.addEventListener('DOMContentLoaded', loadEvent);
