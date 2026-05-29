@@ -4,57 +4,91 @@
     <meta charset="UTF-8">
     <title>Campus Melody - Catalogue</title>
     <link rel="stylesheet" href="Style.css">
+    <!-- Importation de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Importation de la librairie d'icônes Lucide -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen">
-    <div class="flex min-h-screen">
-        <aside class="w-64 bg-[#18181B] border-r border-[#27272A] flex flex-col h-screen sticky top-0">
-            <div class="p-8 flex items-center gap-3">
+<body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen font-sans flex">
+
+    <!-- SIDEBAR (Remplie par navigation.js) -->
+    <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col h-screen sticky top-0 overflow-y-auto">
+        <div class="px-6 py-8 border-b border-[#27272A]">
+            <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
                 <h1 class="text-sm font-bold">Campus Melody</h1>
             </div>
-            <nav class="flex-1 px-3">
-                <p class="text-[10px] text-[#A1A1AA] uppercase px-3 mb-4">Pages</p>
-                <div id="sidebar-nav" class="space-y-1"></div>
-            </nav>
-        </aside>
+        </div>
+        <nav class="flex-1 px-3 py-4">
+            <p class="text-[10px] text-[#A1A1AA] uppercase px-3 mb-4 tracking-widest font-semibold">Pages</p>
+            <div id="sidebar-nav" class="space-y-1"></div>
+        </nav>
+    </aside>
 
-        <main class="flex-1 p-10 overflow-y-auto">
-            <div class="top-bar w-full mb-10 flex justify-between items-center"> 
-                <div><h2 class="text-3xl font-bold">Catalogue</h2><p class="text-[#A1A1AA]">Découvrez et participez aux activités</p></div>
-                <div class="user-actions flex gap-3"><button class="icon-btn">🔔</button><div class="user-avatar">JM</div></div>
+    <!-- CONTENU PRINCIPAL -->
+    <main class="flex-1 overflow-y-auto px-8 py-10">
+        
+        <!-- GRANDE CASE GRISE (Conteneur principal) -->
+        <div class="bg-[#18181B] rounded-3xl p-8 border border-[#27272A] max-w-6xl mx-auto shadow-xl">
+            
+            <!-- TOPBAR -->
+            <div class="flex justify-between items-center mb-10 border-b border-[#27272A] pb-6"> 
+                <div>
+                    <h2 class="text-3xl font-bold tracking-tight text-[#F5F5F7]">Catalogue</h2>
+                    <p class="text-sm text-[#A1A1AA]">Découvrez et participez aux activités du campus</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <a href="notifications.html" class="w-9 h-9 bg-[#0B0B0F] border border-[#27272A] rounded-xl flex items-center justify-center text-sm hover:bg-[#27272A] transition">🔔</a>
+                    <a href="profil.html" id="user-avatar-link" class="w-10 h-10 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-[11px] font-bold text-[#A78BFA] hover:bg-[#A78BFA]/30 transition shadow-lg shadow-[#A78BFA]/5">
+                        --
+                    </a>
+                </div>
             </div>
 
             <!-- Barre de Recherche et Filtres -->
             <div class="flex flex-col gap-8 mb-10">
+                
+                <!-- RECHERCHE PAR NOM (ID très important pour catalogue.js) -->
                 <div class="flex justify-between items-center">
-                    <div class="relative w-80">
-                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A1A1AA]"></i>
-                        <input type="text" placeholder="Filtrer par nom..." class="w-full bg-[#18181B] border border-[#27272A] rounded-xl py-2.5 pl-10 pr-4 text-sm focus:border-[#A78BFA] outline-none">
+                    <div class="relative w-full max-w-md">
+                        <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A1A1AA]"></i>
+                        <input type="text" id="search-input" placeholder="Rechercher un événement par nom..." class="w-full bg-[#0B0B0F] border border-[#27272A] rounded-xl py-3 pl-12 pr-4 text-sm focus:border-[#A78BFA] outline-none transition">
                     </div>
                 </div>
-                <!-- Dans catalogue.html -->
-                <div id="filter-buttons" class="flex gap-3 overflow-x-auto pb-2">
-                    <button data-type="ALL" class="filter-btn active px-5 py-2 rounded-full bg-[#A78BFA] text-[#0B0B0F] font-bold text-xs">Tous</button>
-                    <button data-type="CONCERT" class="filter-btn px-5 py-2 rounded-full bg-[#18181B] border border-[#27272A] text-[#A1A1AA] text-xs">Concert</button>
-                    <button data-type="JAM SESSION" class="filter-btn px-5 py-2 rounded-full bg-[#18181B] border border-[#27272A] text-[#A1A1AA] text-xs">Jam Session</button>
-                    <button data-type="WORKSHOP" class="filter-btn px-5 py-2 rounded-full bg-[#18181B] border border-[#27272A] text-[#A1A1AA] text-xs">Workshop</button>
-                </div>
-                <div class="flex gap-3 overflow-x-auto pb-2">
-                    <a href="Calendrier.html" class="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-[#A78BFA]/30 bg-[#A78BFA]/5 text-[#A78BFA] font-bold text-sm hover:bg-[#A78BFA]/10 transition-all">
-                        <i data-lucide="calendar-days" class="w-4 h-4"></i>
-                        Voir le calendrier des événements
-                    </a>
+
+                <div class="space-y-4">
+                    <!-- BOUTONS DE FILTRAGE PAR TYPE -->
+                    <div id="filter-buttons" class="flex gap-3 overflow-x-auto pb-2">
+						<button data-type="ALL" class="filter-btn px-6 py-2 rounded-full text-xs transition whitespace-nowrap" style="background:#A78BFA;color:#0B0B0F;font-weight:bold;border:1px solid #A78BFA">Tous</button>
+						<button data-type="CONCERT" class="filter-btn px-6 py-2 rounded-full text-xs transition whitespace-nowrap" style="background:#0B0B0F;color:#A1A1AA;border:1px solid #27272A">Concert</button>
+						<button data-type="OPEN MIC" class="filter-btn px-6 py-2 rounded-full text-xs transition whitespace-nowrap" style="background:#0B0B0F;color:#A1A1AA;border:1px solid #27272A">Open Mic</button>
+						<button data-type="JAM SESSION" class="filter-btn px-6 py-2 rounded-full text-xs transition whitespace-nowrap" style="background:#0B0B0F;color:#A1A1AA;border:1px solid #27272A">Jam Session</button>
+						<button data-type="DJ NIGHT" class="filter-btn px-6 py-2 rounded-full text-xs transition whitespace-nowrap" style="background:#0B0B0F;color:#A1A1AA;border:1px solid #27272A">DJ Night</button>
+						<button data-type="WORKSHOP" class="filter-btn px-6 py-2 rounded-full text-xs transition whitespace-nowrap" style="background:#0B0B0F;color:#A1A1AA;border:1px solid #27272A">Workshop</button>
+						<button data-type="AUDITION" class="filter-btn px-6 py-2 rounded-full text-xs transition whitespace-nowrap" style="background:#0B0B0F;color:#A1A1AA;border:1px solid #27272A">Audition</button>
+						<button data-type="RÉPÉTITION" class="filter-btn px-6 py-2 rounded-full text-xs transition whitespace-nowrap" style="background:#0B0B0F;color:#A1A1AA;border:1px solid #27272A">Répétition</button>
+					</div>
+
+                    <!-- Lien vers le calendrier -->
+                    <div class="flex">
+                        <a href="Calendrier.html" class="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-[#A78BFA]/30 bg-[#A78BFA]/5 text-[#A78BFA] font-bold text-sm hover:bg-[#A78BFA]/10 transition-all">
+                            <i data-lucide="calendar-days" class="w-4 h-4"></i>
+                            Voir le calendrier des événements
+                        </a>
+                    </div>
                 </div>
             </div>           
 
-            <!-- Grille d'événements vide (Remplie par catalogue.js) -->
-            <div id="event-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <p>Chargement...</p>
+            <!-- GRILLE D'ÉVÉNEMENTS (Remplie par catalogue.js) -->
+            <div id="event-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 min-h-[400px]">
+                <div class="col-span-full py-20 text-center text-[#A1A1AA] animate-pulse">
+                    Chargement des événements...
+                </div>
             </div>
-        </main>
-    </div>
+        </div>
+    </main>
+
+    <!-- SCRIPTS -->
     <script src="navigation.js"></script>
     <script src="catalogue.js"></script>
 </body>
