@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Campus Melody - Réservations</title>
-    <!-- On garde les outils de style -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen font-sans flex">
 
-    <!-- 1. LA STRUCTURE DE LA SIDEBAR -->
     <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col sticky top-0 h-screen overflow-y-auto">
         <div class="px-6 py-8 border-b border-[#27272A]">
             <div class="flex items-center gap-3">
@@ -17,20 +15,13 @@
                 <h1 class="text-sm font-bold text-[#F5F5F7] leading-tight">Campus Melody</h1>
             </div>
         </div>
-        
         <nav class="flex-1 px-3 py-4">
             <p class="text-[10px] font-semibold text-[#A1A1AA] uppercase tracking-widest px-3 mb-3">Pages</p>
-            
-            <!-- ID IMPORTANT : Ton script navigation.js injecte les liens ICI -->
             <div id="sidebar-nav" class="space-y-1"></div>
-            
         </nav>
     </aside>
 
-    <!-- 2. LE CONTENU PRINCIPAL -->
     <main class="flex-1 overflow-y-auto px-8 py-10">
-        
-        <!-- CASE DE TOUR GRISE (Style identique au profil) -->
         <div class="bg-[#18181B] rounded-3xl p-8 border border-[#27272A] max-w-5xl mx-auto">
             
             <!-- TopBar -->
@@ -41,15 +32,12 @@
                 </div>
                 <div class="flex items-center space-x-3">
                     <a href="notifications.html" class="w-9 h-9 bg-[#0B0B0F] border border-[#27272A] rounded-xl flex items-center justify-center text-sm hover:bg-[#27272A] transition">🔔</a>
-                    
-                    <!-- Profil avec initiales PHP -->
-                    <a href="profil.html" class="w-9 h-9 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-[11px] font-bold text-[#A78BFA] hover:bg-[#A78BFA]/30 transition shadow-lg shadow-[#A78BFA]/5">
-                        <?= $initiales ?>
+                    <a href="profil.html" id="user-avatar-link" class="w-10 h-10 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-[11px] font-bold text-[#A78BFA] hover:bg-[#A78BFA]/30 transition shadow-lg shadow-[#A78BFA]/5">
+                        --
                     </a>
                 </div>
             </div>
-
-            <!-- Message de succès PHP -->
+            <!-- Message de succès -->
             <?php if ($message_success): ?>
                 <div class="mb-6 p-4 bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl text-sm"><?= $message_success ?></div>
             <?php endif; ?>
@@ -57,7 +45,7 @@
             <!-- Sélecteur de Date -->
             <div class="flex gap-2 overflow-x-auto pb-6">
                 <?php foreach ($dates as $d): ?>
-                    <a href="?date=<?= $d['full'] ?>&tab=<?= $activeTab ?>" class="flex flex-col items-center px-4 py-3 rounded-xl border transition min-w-[75px] <?= ($selectedDate === $d['full'] ? 'bg-[#A78BFA] border-[#A78BFA] text-[#0B0B0F]' : 'bg-[#0B0B0F] border-[#27272A] text-[#A1A1AA]') ?>">
+                    <a href="?date=<?= $d['full'] ?>&tab=<?= $activeTab ?>" class="flex flex-col items-center px-4 py-3 rounded-xl border transition min-w-[75px] <?= ($selectedDate === $d['full'] ? 'bg-[#A78BFA] border-[#A78BFA] text-[#0B0B0F]' : 'bg-[#0B0B0F] border-[#27272A] text-[#A1A1AA] hover:border-[#A78BFA]/50') ?>">
                         <span class="text-[10px] font-bold uppercase"><?= $d['dayName'] ?></span>
                         <span class="text-lg font-bold"><?= $d['dayNum'] ?></span>
                         <span class="text-[10px]"><?= $d['month'] ?></span>
@@ -67,15 +55,16 @@
 
             <!-- Onglets -->
             <div class="flex gap-0 mb-8 border-b border-[#27272A]">
-                <a href="?date=<?= $selectedDate ?>&tab=salles" class="pb-2.5 px-5 text-sm font-bold <?= ($activeTab === 'salles' ? 'text-[#A78BFA] border-b-2 border-[#A78BFA]' : 'text-[#A1A1AA]') ?>">Salles</a>
-                <a href="?date=<?= $selectedDate ?>&tab=materiel" class="pb-2.5 px-5 text-sm font-bold <?= ($activeTab === 'materiel' ? 'text-[#A78BFA] border-b-2 border-[#A78BFA]' : 'text-[#A1A1AA]') ?>">Matériel</a>
+                <a href="?date=<?= $selectedDate ?>&tab=salles" class="pb-2.5 px-5 text-sm font-bold <?= ($activeTab === 'salles' ? 'text-[#A78BFA] border-b-2 border-[#A78BFA]' : 'text-[#A1A1AA] hover:text-[#F5F5F7] transition') ?>">Salles</a>
+                <a href="?date=<?= $selectedDate ?>&tab=materiel" class="pb-2.5 px-5 text-sm font-bold <?= ($activeTab === 'materiel' ? 'text-[#A78BFA] border-b-2 border-[#A78BFA]' : 'text-[#A1A1AA] hover:text-[#F5F5F7] transition') ?>">Matériel</a>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
+                
                 <!-- Liste des ressources -->
                 <div class="space-y-2">
                     <?php foreach ($resources as $res): ?>
-                        <a href="?date=<?= $selectedDate ?>&tab=<?= $activeTab ?>&id_ressource=<?= $res['id_resource'] ?>" class="flex items-center gap-3 px-4 py-4 rounded-xl border transition <?= ($selectedResourceId == $res['id_resource'] ? 'border-[#A78BFA] bg-[#A78BFA]/10' : 'bg-[#0B0B0F] border-[#27272A]') ?>">
+                        <a href="?date=<?= $selectedDate ?>&tab=<?= $activeTab ?>&id_ressource=<?= $res['id_resource'] ?>" class="flex items-center gap-3 px-4 py-4 rounded-xl border transition-all <?= ($selectedResourceId == $res['id_resource'] ? 'border-[#A78BFA] bg-[#A78BFA]/10' : 'bg-[#0B0B0F] border-[#27272A] hover:border-[#A78BFA]/50 hover:bg-[#A78BFA]/5') ?>">
                             <span class="text-xl"><?= ($activeTab === 'salles' ? '🏠' : '🎸') ?></span>
                             <p class="text-sm font-semibold truncate"><?= htmlspecialchars($res['nom']) ?></p>
                         </a>
@@ -92,7 +81,9 @@
                                 $time_start = substr($slot, 0, 5); 
                                 $is_taken = in_array($time_start, $unavailableSlots);
                             ?>
-                                <div class="p-4 rounded-xl border <?= $is_taken ? 'opacity-40 bg-[#18181B]' : 'bg-[#18181B] hover:border-[#A78BFA]/50 transition' ?>">
+                                <div class="p-4 rounded-xl border border-[#27272A] transition-all <?= $is_taken 
+                                    ? 'opacity-40 bg-[#18181B] cursor-not-allowed' 
+                                    : 'bg-[#18181B] hover:border-[#A78BFA]/60 hover:bg-[#A78BFA]/5 hover:shadow-lg hover:shadow-[#A78BFA]/5 cursor-pointer' ?>">
                                     <div class="flex justify-between items-center">
                                         <div>
                                             <p class="text-sm font-bold"><?= $slot ?></p>
@@ -104,7 +95,7 @@
                                                 <input type="hidden" name="id_ressource" value="<?= $selectedResourceId ?>">
                                                 <input type="hidden" name="selected_date" value="<?= $selectedDate ?>">
                                                 <input type="hidden" name="slot" value="<?= $slot ?>">
-                                                <button type="submit" class="text-xs bg-[#A78BFA] text-[#0B0B0F] px-4 py-2 rounded-lg font-bold">Réserver</button>
+                                                <button type="submit" class="text-xs bg-[#A78BFA] text-[#0B0B0F] px-4 py-2 rounded-lg font-bold hover:bg-white transition-colors">Réserver</button>
                                             </form>
                                         <?php endif; ?>
                                     </div>
@@ -117,7 +108,6 @@
         </div>
     </main>
 
-    <!-- 3. APPEL DU SCRIPT JS POUR LE MENU -->
     <script src="navigation.js"></script>
 </body>
 </html>
