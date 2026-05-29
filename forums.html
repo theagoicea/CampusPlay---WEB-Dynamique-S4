@@ -9,14 +9,13 @@
 <body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen font-sans flex hidden" id="page-body">
 
     <!-- BARRE LATÉRALE -->
-    <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col sticky top-0 h-screen overflow-y-auto">
+    <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col h-screen sticky top-0 overflow-y-auto">
         <div class="px-6 py-8 border-b border-[#27272A]">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
                 <h1 class="text-sm font-bold text-[#F5F5F7] leading-tight">Campus Melody</h1>
             </div>
         </div>
-        
         <nav class="flex-1 px-3 py-4">
             <p class="text-[10px] font-semibold text-[#A1A1AA] uppercase tracking-widest px-3 mb-3">Pages</p>
             <div id="sidebar-nav" class="space-y-1"></div>
@@ -26,71 +25,73 @@
     <!-- CONTENU PRINCIPAL -->
     <main class="flex-1 overflow-y-auto px-8 py-10">
         
-        <div class="bg-[#18181B] rounded-3xl p-8 border border-[#27272A] max-w-5xl mx-auto">
+        <div class="bg-[#18181B] rounded-3xl p-8 border border-[#27272A] max-w-5xl mx-auto shadow-xl">
             
-            <!-- TopBar -->
-            <div class="flex justify-between items-center mb-8 border-b border-[#27272A] pb-4">
+            <!-- TOPBAR -->
+            <div class="flex justify-between items-center mb-10 border-b border-[#27272A] pb-6"> 
                 <div>
-                    <h3 class="text-2xl font-bold tracking-tight">Forum</h3>
+                    <h2 class="text-3xl font-bold tracking-tight text-[#F5F5F7]">Forum</h2>
                     <p class="text-sm text-[#A1A1AA]">Échanges et discussions entre membres</p>
                 </div>
                 <div class="flex items-center space-x-3">
-                   <div class="relative z-50">
-                        <form id="search-form" class="relative">
-                            <input type="text" id="searchInput" placeholder="🔍 Rechercher (titre, message...)" autocomplete="off"
-                                   class="h-9 w-64 bg-[#0B0B0F] border border-[#27272A] rounded-lg px-3 text-xs text-[#F5F5F7] focus:outline-none focus:border-[#A78BFA]/50" />
-                            
-                            <!-- Menu déroulant des résultats de recherche -->
-                            <div id="searchResults" class="absolute top-full left-0 w-full mt-1 bg-[#18181B] border border-[#27272A] rounded-lg shadow-xl hidden overflow-hidden">
-                            </div>
-                        </form>
+                    <a href="notifications.html" class="w-9 h-9 bg-[#0B0B0F] border border-[#27272A] rounded-xl flex items-center justify-center text-sm hover:bg-[#27272A] transition">🔔</a>
+                    <a href="profil.html" id="user-avatar-link" class="w-10 h-10 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-[11px] font-bold text-[#A78BFA] hover:bg-[#A78BFA]/30 transition shadow-lg shadow-[#A78BFA]/5">
+                        --
+                    </a>
+                </div>
+            </div>
+
+            <!-- BARRE DE RECHERCHE -->
+            <div class="flex flex-col gap-8 mb-10">
+                <div class="relative w-full max-w-md">
+                    <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A1A1AA]"></i>
+                    <form id="search-form">
+                        <input type="text" id="searchInput" placeholder="Rechercher un sujet, un message..." autocomplete="off"
+                               class="w-full bg-[#0B0B0F] border border-[#27272A] rounded-xl py-3 pl-12 pr-4 text-sm focus:border-[#A78BFA] outline-none transition">
+                    </form>
+                    <!-- Menu déroulant des résultats -->
+                    <div id="searchResults" class="absolute top-full left-0 w-full mt-2 bg-[#18181B] border border-[#27272A] rounded-xl shadow-2xl hidden overflow-hidden z-50">
                     </div>
                 </div>
             </div>
             
-            <div class="bg-[#0B0B0F] rounded-2xl p-6 border-2 border-dashed border-[#A78BFA]/20 space-y-6">
+            <div class="bg-[#0B0B0F] rounded-2xl p-6 border border-[#27272A] space-y-8">
 
                 <!-- Grille des Catégories -->
                 <div>
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-[#A1A1AA] mb-4">Catégories</h4>
-                    <div id="categories-grid" class="grid grid-cols-2 lg:grid-cols-3 gap-3">
-                        <!-- Injecté par JS -->
-                    </div>
+                    <h4 class="text-[10px] font-bold uppercase tracking-widest text-[#A1A1AA] mb-4">Catégories</h4>
+                    <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
                 </div>
 
                 <!-- Discussions récentes -->
                 <div>
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center gap-3">
-                            <h4 id="topics-title" class="text-xs font-bold uppercase tracking-wider text-[#A1A1AA]">
+                            <h4 id="topics-title" class="text-[10px] font-bold uppercase tracking-widest text-[#A1A1AA]">
                                 Discussions récentes
                             </h4>
                             <a href="forums.html" id="btn-clear-filters" class="text-[10px] text-rose-400 hover:underline border border-rose-400/30 bg-rose-400/10 px-2 py-0.5 rounded hidden">Effacer les filtres ✕</a>
                         </div>
-                        
-                        <a href="creer-sujet.html" class="px-4 py-2 bg-[#A78BFA] text-[#0B0B0F] rounded-lg text-xs font-bold hover:bg-[#A78BFA]/90 transition cursor-pointer">
+                        <a href="creer-sujet.html" class="px-4 py-2 bg-[#A78BFA] text-[#0B0B0F] rounded-lg text-xs font-bold hover:bg-[#A78BFA]/90 transition">
                             + Nouveau sujet
                         </a>
                     </div>
-                    
-                    <div id="topics-list" class="space-y-2">
-                        <!-- Injecté par JS -->
-                    </div>
+                    <div id="topics-list" class="space-y-3"></div>
                 </div>
 
-                <!-- Quick Stats -->
-                <div class="grid grid-cols-3 gap-3 pt-4 border-t border-[#27272A]">
+                <!-- Stats -->
+                <div class="grid grid-cols-3 gap-4 pt-6 border-t border-[#27272A]">
                     <div class="text-center">
                         <div id="stat-topics" class="text-2xl font-bold text-[#A78BFA]">0</div>
-                        <div class="text-[10px] text-[#A1A1AA] uppercase tracking-wider">Sujets totaux</div>
+                        <div class="text-[10px] text-[#A1A1AA] uppercase tracking-widest">Sujets</div>
                     </div>
                     <div class="text-center">
                         <div id="stat-posts" class="text-2xl font-bold text-[#A78BFA]">0</div>
-                        <div class="text-[10px] text-[#A1A1AA] uppercase tracking-wider">Messages</div>
+                        <div class="text-[10px] text-[#A1A1AA] uppercase tracking-widest">Messages</div>
                     </div>
                     <div class="text-center">
                         <div id="stat-members" class="text-2xl font-bold text-[#A78BFA]">0</div>
-                        <div class="text-[10px] text-[#A1A1AA] uppercase tracking-wider">Membres actifs</div>
+                        <div class="text-[10px] text-[#A1A1AA] uppercase tracking-widest">Actifs</div>
                     </div>
                 </div>
 
@@ -101,7 +102,6 @@
     <script src="navigation.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            // 1. Lire les paramètres de l'URL (pour les filtres)
             const urlParams = new URLSearchParams(window.location.search);
             const cat = urlParams.get('cat') || '';
             const search = urlParams.get('search') || '';
@@ -111,18 +111,16 @@
             }
 
             try {
-                // 2. Appel au backend avec les filtres
                 const response = await fetch(`b_forums.php?cat=${encodeURIComponent(cat)}&search=${encodeURIComponent(search)}`);
                 const data = await response.json();
 
                 if (!data.success && data.error === 'not_logged_in') {
-                    window.location.href = 'authentification.html';
+                    window.location.href = 'b_authentification.php';
                     return;
                 }
 
                 document.getElementById('page-body').classList.remove('hidden');
 
-                // 3. Injecter les catégories
                 document.getElementById('categories-grid').innerHTML = data.categories.map(c => `
                     <a href="forums.html?cat=${c.id}" class="block bg-[#18181B] border border-[#27272A] rounded-xl p-4 cursor-pointer hover:border-[#A78BFA]/40 transition-all">
                         <div class="flex items-center gap-3 mb-3">
@@ -135,7 +133,6 @@
                     </a>
                 `).join('');
 
-                // 4. Titre et bouton d'effacement des filtres
                 const titleEl = document.getElementById('topics-title');
                 const clearBtn = document.getElementById('btn-clear-filters');
                 
@@ -147,26 +144,23 @@
                     clearBtn.classList.remove('hidden');
                 }
 
-                // 5. Injecter la liste des sujets
                 const topicsList = document.getElementById('topics-list');
                 if (data.topics.length === 0) {
-                    topicsList.innerHTML = '<p class="text-sm text-[#A1A1AA] text-center py-4">Aucune discussion pour le moment. Lancez-vous !</p>';
+                    topicsList.innerHTML = '<p class="text-sm text-[#A1A1AA] text-center py-8 italic">Aucune discussion trouvée.</p>';
                 } else {
                     topicsList.innerHTML = data.topics.map(topic => `
-                        <a href="sujet.html?id=${topic.id_forum}" class="block bg-[#18181B] border border-[#27272A] rounded-xl p-4 hover:border-[#A78BFA]/40 transition cursor-pointer">
+                        <a href="sujet.html?id=${topic.id_forum}" class="block bg-[#18181B] border border-[#27272A] rounded-xl p-4 hover:border-[#A78BFA]/40 transition cursor-pointer group">
                             <div class="flex items-start justify-between gap-4">
                                 <div class="flex-1">
                                     <div class="flex items-center gap-2 mb-1">
                                         ${topic.is_new ? '<span class="w-2 h-2 rounded-full bg-[#A78BFA] animate-pulse"></span>' : ''}
                                         ${topic.est_ferme ? '<i data-lucide="lock" class="w-3 h-3 text-rose-500"></i>' : ''}
-                                        <h5 class="text-sm font-semibold text-[#F5F5F7]">${topic.titre}</h5>
+                                        <h5 class="text-sm font-semibold text-[#F5F5F7] group-hover:text-[#A78BFA] transition">${topic.titre}</h5>
                                     </div>
                                     <div class="flex items-center gap-2 mt-2">
                                         <span class="text-[10px] text-[#A1A1AA]">par ${topic.author}</span>
                                         <span class="text-[10px] text-[#52525B]">·</span>
-                                        <span class="text-[9px] px-2 py-0.5 rounded bg-[#27272A] text-[#A1A1AA]">
-                                            ${topic.category_name}
-                                        </span>
+                                        <span class="text-[9px] px-2 py-0.5 rounded bg-[#27272A] text-[#A1A1AA]">${topic.category_name}</span>
                                     </div>
                                 </div>
                                 <div class="flex flex-col items-end gap-1 shrink-0">
@@ -178,7 +172,6 @@
                     `).join('');
                 }
 
-                // 6. Injecter les stats globales
                 document.getElementById('stat-topics').textContent = data.stats.totalTopics;
                 document.getElementById('stat-posts').textContent = data.stats.totalPosts;
                 document.getElementById('stat-members').textContent = data.stats.activeMembers;
@@ -190,57 +183,44 @@
             }
         });
 
-        // ==========================================
-        // GESTION DE LA RECHERCHE (Appuie sur Entrée ou Live Search)
-        // ==========================================
+        // RECHERCHE
         const searchInput = document.getElementById('searchInput');
         const searchResults = document.getElementById('searchResults');
         const searchForm = document.getElementById('search-form');
 
-        // Validation du formulaire complet
         searchForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const val = searchInput.value.trim();
             if (val) window.location.href = `forums.html?search=${encodeURIComponent(val)}`;
         });
 
-        // Recherche en direct (Live Search)
         searchInput.addEventListener('input', async (e) => {
             const val = e.target.value.trim();
-            if(val.length < 2) {
+            if (val.length < 2) {
                 searchResults.classList.add('hidden');
                 return;
             }
 
-            // Appel AJAX vers b_forums.php avec le paramètre 'q'
             const res = await fetch(`b_forums.php?q=${encodeURIComponent(val)}`);
             const data = await res.json();
-            
             searchResults.innerHTML = '';
             
-            if(data.length === 0) {
-                searchResults.innerHTML = '<div class="p-3 text-xs text-[#A1A1AA] text-center">Aucun résultat trouvé</div>';
+            if (data.length === 0) {
+                searchResults.innerHTML = '<div class="p-4 text-xs text-[#A1A1AA] text-center italic">Aucun résultat</div>';
             } else {
-                const top3 = data.slice(0, 3);
-                top3.forEach(item => {
+                data.slice(0, 3).forEach(item => {
                     searchResults.innerHTML += `
-                        <a href="sujet.html?id=${item.id_forum}" class="block p-3 border-b border-[#27272A] hover:bg-[#27272A] transition">
+                        <a href="sujet.html?id=${item.id_forum}" class="block p-4 border-b border-[#27272A] hover:bg-[#27272A] transition">
                             <div class="text-sm font-bold text-[#F5F5F7] truncate">${item.titre}</div>
                         </a>`;
                 });
-                
-                if(data.length > 3) {
-                    searchResults.innerHTML += `<a href="forums.html?search=${encodeURIComponent(val)}" class="block p-2 text-center bg-[#A78BFA]/10 text-[#A78BFA] hover:bg-[#A78BFA]/20 transition text-xs font-bold">Clique ici pour voir les ${data.length} résultats →</a>`;
-                } else {
-                    searchResults.innerHTML += `<a href="forums.html?search=${encodeURIComponent(val)}" class="block p-2 text-center bg-[#A78BFA]/10 text-[#A78BFA] hover:bg-[#A78BFA]/20 transition text-xs font-bold">Voir tous les résultats →</a>`;
-                }
+                searchResults.innerHTML += `<a href="forums.html?search=${encodeURIComponent(val)}" class="block p-3 text-center bg-[#A78BFA]/10 text-[#A78BFA] hover:bg-[#A78BFA]/20 transition text-xs font-bold uppercase tracking-widest">Tout voir</a>`;
             }
             searchResults.classList.remove('hidden');
         });
 
-        // Fermer la liste si on clique ailleurs
         document.addEventListener('click', (e) => {
-            if(!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+            if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
                 searchResults.classList.add('hidden');
             }
         });
