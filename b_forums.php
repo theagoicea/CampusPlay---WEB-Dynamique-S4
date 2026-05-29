@@ -3,10 +3,7 @@ session_start();
 header('Content-Type: application/json');
 
 // Vérification de connexion
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'error' => 'not_logged_in']);
-    exit();
-}
+$is_logged_in = isset($_SESSION['user_id']);
 
 $host = 'localhost';
 $dbname = 'campusmelody';
@@ -143,6 +140,7 @@ $activeMembers = $pdo->query("SELECT COUNT(DISTINCT id_auteur) FROM message_foru
 // Envoi de la réponse complète
 echo json_encode([
     'success' => true,
+    'is_logged_in' => $is_logged_in,
     'categories' => $categoriesData,
     'topics' => $recentTopics,
     'stats' => [
