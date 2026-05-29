@@ -61,9 +61,9 @@
                     const data = await res.json();
 
                     if (!data.success) {
-                        window.location.href = data.redirect || 'authentification.html';
-                        return;
-                    }
+						window.location.href = 'forums.html';
+						return;
+					}
 
                     document.getElementById('page-body').classList.remove('hidden');
                     document.title = `Campus Melody - ${data.topic.titre}`;
@@ -112,7 +112,7 @@
                         else if(msg.id_auteur == topic.id_createur) badge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-[#A78BFA]/20 text-[#A78BFA] font-bold uppercase tracking-wider">Auteur</span>`;
 
                         let actions = '';
-                        if(msg.id_auteur != user.id && msg.signale == 0) {
+                        if(msg.id_auteur != user.id && msg.signale == 0 && data.is_logged_in) {
                             actions += `<button onclick="performAction('report_msg', ${msg.id_message}, 'Signaler ce message ?')" class="text-[#A1A1AA] hover:text-amber-500 transition cursor-pointer" title="Signaler le message"><i data-lucide="flag" class="w-4 h-4"></i></button>`;
                         } else if(msg.signale == 1) {
                             actions += `<span class="text-rose-500 text-[10px] font-bold flex items-center gap-1" title="Message signalé"><i data-lucide="alert-triangle" class="w-3 h-3"></i> Signalé</span>`;
@@ -158,9 +158,13 @@
                                 <p class="text-xs text-[#A1A1AA] mt-1">Vous ne pouvez plus ajouter de nouvelle réponse.</p>
                             </div>`;
                     } else {
+                        let loginPrompt = data.is_logged_in ? '' : 
+                            `<div class="mb-4 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-500 text-xs">Vous n'êtes pas connecté. Votre message sera publié en tant qu'<b>Anonyme</b>. <a href="authentification.html" class="underline font-bold hover:text-amber-400">Se connecter</a></div>`;
+
                         replySection.innerHTML = `
                             <div class="bg-[#0B0B0F] border-2 border-dashed border-[#A78BFA]/20 rounded-2xl p-6">
                                 <h4 class="text-sm font-bold mb-4">Ajouter une réponse</h4>
+                                ${loginPrompt}
                                 <form id="reply-form">
                                     <textarea name="contenu" required rows="4" placeholder="Tapez votre message ici..."
                                               class="w-full bg-[#18181B] rounded-xl border border-[#27272A] p-4 text-sm text-[#F5F5F7] focus:outline-none focus:border-[#A78BFA]/50 placeholder-[#52525B] resize-none mb-4"></textarea>
