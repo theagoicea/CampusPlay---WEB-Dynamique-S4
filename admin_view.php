@@ -6,6 +6,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        /* Styles pour l'accordéon des demandes */
         .request-row.expanded .detail-section { display: block; }
         .detail-section { display: none; }
         .request-row.expanded .chevron-icon { transform: rotate(180deg); }
@@ -13,12 +14,12 @@
 </head>
 <body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen font-sans flex">
 
-    <!-- Sidebar (navigation.js) -->
+    <!-- SIDEBAR (Remplie par navigation.js) -->
     <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col sticky top-0 h-screen overflow-y-auto">
         <div class="px-6 py-8 border-b border-[#27272A]">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
-                <h1 class="text-sm font-bold leading-tight">Campus Melody</h1>
+                <h1 class="text-sm font-bold leading-tight text-[#F5F5F7]">Campus Melody</h1>
             </div>
         </div>
         <nav class="flex-1 px-3 py-4">
@@ -27,28 +28,34 @@
         </nav>
     </aside>
 
+    <!-- CONTENU PRINCIPAL -->
     <main class="flex-1 overflow-y-auto px-8 py-10">
-        <!-- Boîte grise identique au profil -->
+        <!-- Boîte Grise principale (Style identique au profil) -->
         <div class="bg-[#18181B] rounded-3xl p-8 border border-[#27272A] max-w-6xl mx-auto shadow-xl">
             
-            <!-- TOPBAR IDENTIQUE À RÉSERVATIONS -->
-            <div class="flex justify-between items-center mb-8 border-b border-[#27272A] pb-4">
+            <!-- TopBar -->
+            <div class="flex justify-between items-center mb-8 border-b border-[#27272A] pb-6">
                 <div>
                     <h3 class="text-2xl font-bold tracking-tight">Tableau de bord Admin</h3>
-                    <p class="text-sm text-[#A1A1AA]">Gérez les validations et supervisez la plateforme</p>
+                    <p class="text-sm text-[#A1A1AA]">Supervision et gestion des demandes</p>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <a href="notifications.php" class="w-9 h-9 bg-[#0B0B0F] border border-[#27272A] rounded-xl flex items-center justify-center text-sm hover:bg-[#27272A] transition">🔔</a>
-                    <a href="profil.html" class="w-9 h-9 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-[11px] font-bold text-[#A78BFA] hover:bg-[#A78BFA]/30 transition shadow-lg shadow-[#A78BFA]/5">
+                    <!-- Notifications -->
+                    <a href="notifications.html" class="w-10 h-10 bg-[#0B0B0F] border border-[#27272A] rounded-xl flex items-center justify-center hover:bg-[#27272A] transition">
+                        <i data-lucide="bell" class="w-4 h-4 text-[#F5F5F7]"></i>
+                    </a>
+                    
+                    <!-- Profil -->
+                    <a href="profil.html" class="w-10 h-10 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-[11px] font-bold text-[#A78BFA] hover:bg-[#A78BFA]/30 transition shadow-lg shadow-[#A78BFA]/5">
                         <?= $initiales ?>
                     </a>
                 </div>
             </div>
 
-            <!-- KPIs -->
+            <!-- GRILLE KPI (Statistiques) -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
                 <div class="bg-[#0B0B0F] border border-[#27272A] p-6 rounded-2xl">
-                    <div class="text-[10px] font-bold uppercase tracking-wider text-[#A1A1AA] mb-2">Nombre de membres</div>
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-[#A1A1AA] mb-2">Membres inscrits</div>
                     <div class="text-3xl font-bold text-purple-400"><?= $stats['membres'] ?></div>
                 </div>
                 <div class="bg-[#0B0B0F] border border-[#27272A] p-6 rounded-2xl">
@@ -61,9 +68,9 @@
                 </div>
             </div>
 
-            <!-- LISTE DES DEMANDES -->
+            <!-- SECTION DEMANDES -->
             <div class="bg-[#0B0B0F] rounded-2xl p-6 border border-[#27272A]">
-                <h4 class="text-xs font-bold uppercase tracking-wider text-[#A1A1AA] mb-6">Demandes de validation</h4>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-[#A1A1AA] mb-6">Gestion des demandes</h4>
                 
                 <div class="space-y-3">
                     <?php if (empty($requests)): ?>
@@ -73,10 +80,16 @@
                     <?php else: ?>
                         <?php foreach ($requests as $req): ?>
                             <div class="bg-[#18181B] border border-[#27272A] rounded-xl overflow-hidden request-row transition-all hover:border-[#A78BFA]/30" id="req-<?= $req['id'] ?>">
+                                <!-- En-tête de ligne cliquable -->
                                 <div class="flex justify-between items-center p-4 cursor-pointer" onclick="toggleRequest('<?= $req['id'] ?>')">
                                     <div class="flex items-center gap-4">
+                                        <!-- BADGE DYNAMIQUE SELON LE TYPE -->
                                         <span class="text-[9px] px-2 py-1 rounded font-bold border 
-                                            <?= $req['type'] === 'inscription' ? 'bg-violet-500/10 text-violet-400 border-violet-500/20' : 'bg-pink-500/10 text-pink-400 border-pink-500/20' ?>">
+                                            <?php 
+                                                if($req['type'] === 'inscription') echo 'bg-violet-500/10 text-violet-400 border-violet-500/20';
+                                                elseif($req['type'] === 'reservation') echo 'bg-pink-500/10 text-pink-400 border-pink-500/20';
+                                                elseif($req['type'] === 'creation') echo 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+                                            ?>">
                                             <?= strtoupper($req['type']) ?>
                                         </span>
                                         <div>
@@ -84,20 +97,23 @@
                                             <p class="text-[11px] text-[#A1A1AA]">Par <?= htmlspecialchars($req['user']) ?></p>
                                         </div>
                                     </div>
-                                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#52525B] chevron-icon transition-transform"></i>
+                                    <i data-lucide="chevron-down" class="w-4 h-4 text-[#52525B] chevron-icon transition-transform duration-300"></i>
                                 </div>
 
+                                <!-- Détails Accordéon -->
                                 <div class="detail-section px-4 pb-5 border-t border-[#27272A] pt-4 bg-[#0B0B0F]/30">
                                     <p class="text-xs text-[#A1A1AA] mb-5 leading-relaxed"><?= htmlspecialchars($req['detail']) ?></p>
                                     <form method="POST" class="flex gap-3">
+                                        <!-- Champs cachés pour envoyer les infos au PHP -->
                                         <input type="hidden" name="item_id" value="<?= $req['id'] ?>">
                                         <input type="hidden" name="item_type" value="<?= $req['type'] ?>">
+                                        
                                         <button name="action" value="approuver" class="px-5 py-2 bg-green-500/10 border border-green-500/20 text-green-400 text-[10px] font-bold rounded-lg hover:bg-green-500/20 transition">Approuver</button>
                                         <button name="action" value="refuser" class="px-5 py-2 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-bold rounded-lg hover:bg-rose-500/20 transition">Refuser</button>
                                     </form>
                                 </div>
                             </div>
-                        <?php endforeach; ?>
+                        <?php endforeach; ?> 
                     <?php endif; ?>
                 </div>
             </div>
@@ -106,12 +122,19 @@
 
     <script src="navigation.js"></script>
     <script>
+        // Fonction pour ouvrir/fermer les lignes de demandes
         function toggleRequest(id) {
             const row = document.getElementById('req-' + id);
-            row.classList.toggle('expanded');
+            if(row) {
+                row.classList.toggle('expanded');
+            }
         }
+        
+        // Initialisation des icônes au chargement
         window.addEventListener('DOMContentLoaded', () => {
-            if(window.lucide) lucide.createIcons();
+            if(window.lucide) {
+                lucide.createIcons();
+            }
         });
     </script>
 </body>
