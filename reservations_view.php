@@ -1,3 +1,28 @@
+<?php
+// Petite fonction pour attribuer un émoji selon le nom de la ressource
+function getResourceIcon($nom, $type) {
+    $nom = strtolower($nom);
+    if (strpos($nom, 'piano') !== false) return '🎹';
+    if (strpos($nom, 'batterie') !== false) return '🥁';
+    if (strpos($nom, 'voix') !== false || strpos($nom, 'chant') !== false) return '🎤';
+    if (strpos($nom, 'm.a.o') !== false || strpos($nom, 'mao') !== false) return '🎧';
+    if (strpos($nom, 'guitare') !== false) return '🎸';
+    if (strpos($nom, 'basse') !== false) return '🎸';
+	if (strpos($nom, 'rock') !== false) return '🎸';
+    if (strpos($nom, 'synthé') !== false || strpos($nom, 'clavier') !== false) return '🎹';
+    if (strpos($nom, 'micro') !== false) return '🎙️';
+    if (strpos($nom, '	carte son') !== false || strpos($nom, 'interface') !== false) return '🎚️';
+    if (strpos($nom, 'casque') !== false) return '🎧';
+    if (strpos($nom, 'enceinte') !== false) return '🔊';
+    if (strpos($nom, 'câble') !== false) return '🔌';
+    if (strpos($nom, 'dj') !== false) return '💿';
+    
+    // Par défaut si rien n'est trouvé, on utilise le type
+    if ($type === 'Studio') return '🏠';
+    if ($type === 'Instrument') return '🎻';
+    return '📦';
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -8,7 +33,8 @@
 </head>
 <body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen font-sans flex">
 
-    <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col sticky top-0 h-screen overflow-y-auto">
+    <!-- SIDEBAR -->
+    <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col h-screen sticky top-0 overflow-y-auto">
         <div class="px-6 py-8 border-b border-[#27272A]">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
@@ -22,7 +48,8 @@
     </aside>
 
     <main class="flex-1 overflow-y-auto px-8 py-10">
-        <div class="bg-[#18181B] rounded-3xl p-8 border border-[#27272A] max-w-5xl mx-auto">
+        <!-- CASE DE TOUR GRISE -->
+        <div class="bg-[#18181B] rounded-3xl p-8 border border-[#27272A] max-w-5xl mx-auto shadow-xl">
             
             <!-- TopBar -->
             <div class="flex justify-between items-center mb-8 border-b border-[#27272A] pb-4">
@@ -31,12 +58,13 @@
                     <p class="text-sm text-[#A1A1AA]">Planifiez vos répétitions et gérez votre matériel</p>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <a href="notifications.html" class="w-9 h-9 bg-[#0B0B0F] border border-[#27272A] rounded-xl flex items-center justify-center text-sm hover:bg-[#27272A] transition">🔔</a>
-                    <a href="profil.html" id="user-avatar-link" class="w-10 h-10 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-[11px] font-bold text-[#A78BFA] hover:bg-[#A78BFA]/30 transition shadow-lg shadow-[#A78BFA]/5">
+                    <a href="notifications.php" class="w-9 h-9 bg-[#0B0B0F] border border-[#27272A] rounded-xl flex items-center justify-center text-sm hover:bg-[#27272A] transition">🔔</a>
+                    <a href="b_profil.php" id="user-avatar-link" class="w-10 h-10 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-[11px] font-bold text-[#A78BFA] hover:bg-[#A78BFA]/30 transition shadow-lg shadow-[#A78BFA]/5">
                         --
                     </a>
                 </div>
             </div>
+
             <!-- Message de succès -->
             <?php if ($message_success): ?>
                 <div class="mb-6 p-4 bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl text-sm"><?= $message_success ?></div>
@@ -65,7 +93,8 @@
                 <div class="space-y-2">
                     <?php foreach ($resources as $res): ?>
                         <a href="?date=<?= $selectedDate ?>&tab=<?= $activeTab ?>&id_ressource=<?= $res['id_resource'] ?>" class="flex items-center gap-3 px-4 py-4 rounded-xl border transition-all <?= ($selectedResourceId == $res['id_resource'] ? 'border-[#A78BFA] bg-[#A78BFA]/10' : 'bg-[#0B0B0F] border-[#27272A] hover:border-[#A78BFA]/50 hover:bg-[#A78BFA]/5') ?>">
-                            <span class="text-xl"><?= ($activeTab === 'salles' ? '🏠' : '🎸') ?></span>
+                            <!-- APPEL DE LA FONCTION POUR L'EMOJI -->
+                            <span class="text-xl"><?php echo getResourceIcon($res['nom'], $activeTab == 'salles' ? 'Studio' : 'Matériel'); ?></span>
                             <p class="text-sm font-semibold truncate"><?= htmlspecialchars($res['nom']) ?></p>
                         </a>
                     <?php endforeach; ?>
