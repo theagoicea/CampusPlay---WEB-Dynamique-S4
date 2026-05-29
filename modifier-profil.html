@@ -88,7 +88,6 @@
 
                 <!-- ACTIONS SECONDAIRES -->
                 <div class="flex flex-col gap-4" id="extra-actions">
-                    <!-- Les boutons d'adhésion seront injectés ici par le JS -->
                     <button id="btn-delete-account" class="w-full h-12 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl font-semibold text-sm cursor-pointer hover:bg-rose-500/20 transition">
                         Supprimer mon compte
                     </button>
@@ -107,7 +106,7 @@
 
             // 1. CHARGEMENT DES DONNÉES DU PROFIL
             try {
-                const response = await fetch('b_modifier-profil.php'); // GET par défaut
+                const response = await fetch('b_modifier-profil.php');
                 const data = await response.json();
 
                 if (!data.success && data.error === 'not_logged_in') {
@@ -117,7 +116,6 @@
 
                 document.getElementById('page-body').classList.remove('hidden');
 
-                // Pré-remplissage des champs
                 document.getElementById('prenom').value = data.user.prenom;
                 document.getElementById('nom').value = data.user.nom;
                 document.getElementById('email').value = data.user.email;
@@ -126,7 +124,6 @@
                     document.getElementById('photo-info').classList.remove('hidden');
                 }
 
-                // Bouton d'adhésion conditionnel
                 const actionsDiv = document.getElementById('extra-actions');
                 
                 if (data.user.est_membre_asso == 0 && data.user.statut_adhesion !== 'En attente') {
@@ -142,7 +139,7 @@
                         const resData = await res.json();
                         if (resData.success) {
                             alert(resData.message);
-                            location.reload(); // On recharge pour actualiser le statut
+                            location.reload();
                         }
                     });
                     
@@ -166,7 +163,7 @@
                 successMsg.classList.add('hidden');
 
                 const formData = new FormData(this);
-                formData.append('action', 'update_profile'); // On spécifie l'action
+                formData.append('action', 'update_profile');
 
                 try {
                     const res = await fetch('b_modifier-profil.php', {
@@ -176,9 +173,15 @@
                     const result = await res.json();
 
                     if (result.success) {
-                        successMsg.textContent = result.message;
+                        // --- PARTIE CORRIGÉE : Affichage + Redirection ---
+                        successMsg.textContent = result.message + " Redirection vers votre profil...";
                         successMsg.classList.remove('hidden');
-                        document.getElementById('mot_de_passe').value = ''; // On vide le champ mdp
+                        document.getElementById('mot_de_passe').value = ''; 
+
+                        // On attend 1.5 seconde avant de rediriger
+                        setTimeout(() => {
+                            window.location.href = 'profil.html';
+                        }, 1500); 
                     } else {
                         errorMsg.textContent = result.error_msg;
                         errorMsg.classList.remove('hidden');
@@ -202,7 +205,7 @@
                     const result = await res.json();
                     
                     if (result.success) {
-                        window.location.href = result.redirect; // Renvoie vers l'authentification
+                        window.location.href = result.redirect;
                     }
                 }
             });
