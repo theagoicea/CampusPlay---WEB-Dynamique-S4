@@ -1,5 +1,15 @@
 let allEvents = [];
-let activeFilters = new Set();
+
+// 1. Dictionnaire des emojis (Indispensable pour que le code ne plante pas)
+const categoryEmojis = {
+    'CONCERT': '🎸',
+    'OPEN MIC': '🎤',
+    'JAM SESSION': '🎷',
+    'DJ NIGHT': '💿',
+    'WORKSHOP': '🎧',
+    'AUDITION': '🎵',
+    'REPETITION': '🥁'
+};
 
 async function loadCatalog() {
     const grid = document.getElementById('event-grid');
@@ -8,132 +18,88 @@ async function loadCatalog() {
         const response = await fetch('get_events.php');
         const data = await response.json();
 
-        if (data.error) { 
-            grid.innerHTML = `<p class="col-span-full text-center text-red-400">${data.error}</p>`; 
+        if(data.error) { 
+            grid.innerHTML = `<p class="text-center py-10 text-rose-500">${data.error}</p>`; 
             return; 
         }
 
         allEvents = data;
-        
-        // On initialise l'affichage
         displayEvents(allEvents);
         setupFilters();
         setupSearch();
 
     } catch (error) {
         console.error("Erreur de chargement :", error);
+        grid.innerHTML = `<p class="text-center py-10 text-rose-500">Erreur de connexion au serveur PHP.</p>`;
     }
 }
 
-function getFilteredEvents() {
-    const searchInput = document.getElementById('search-input');
-    // On vérifie si l'élément existe pour éviter les erreurs
-    const searchQuery = searchInput ? searchInput.value.trim().toLowerCase() : '';
-
-    return allEvents.filter(event => {
-        // 1. Filtrage par Type
-        // On s'assure que le type de l'événement est bien en majuscules pour comparer
-        const eventType = event.type_evenement ? event.type_evenement.toUpperCase() : '';
-        const matchesType = activeFilters.size === 0 || activeFilters.has(eventType);
-
-        // 2. Filtrage par Nom (Recherche)
-        // SECURITÉ : On vérifie que le titre n'est pas vide avant le toLowerCase()
-        const eventTitle = event.titre ? event.titre.toLowerCase() : '';
-        const matchesSearch = searchQuery === '' || eventTitle.includes(searchQuery);
-
-        return matchesType && matchesSearch;
-    });
-}
-
-function displayEvents(eventsToDisplay) {
+function displayEvents(events) {
     const grid = document.getElementById('event-grid');
     
-    if (!grid) return;
-
-    if (eventsToDisplay.length === 0) {
-        grid.innerHTML = `<p class="text-[#A1A1AA] col-span-full text-center py-20 italic">Aucun événement ne correspond à cette recherche.</p>`;
+    if (events.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center py-20 text-[#A1A1AA]">Aucun événement trouvé.</div>`;
         return;
     }
 
-    const typeEmojis = {
-        'CONCERT':     '🎸',
-        'OPEN MIC':    '🎤',
-        'JAM SESSION': '🎷',
-        'DJ NIGHT':    '🎧',
-        'WORKSHOP':    '📚',
-        'AUDITION':    '🎼',
-        'RÉPÉTITION':  '🥁'
-    };
-
-    grid.innerHTML = eventsToDisplay.map(event => {
-        // On gère l'emoji même si le type est en minuscule dans la BDD
-        const typeKey = event.type_evenement ? event.type_evenement.toUpperCase() : '';
-        const emoji = typeEmojis[typeKey] ?? '🎵';
+    grid.innerHTML = events.map(event => {
+        // On récupère l'emoji ou un défaut
+        const emoji = categoryEmojis[event.type_evenement] || '📅';
         
+        // --- LOGIQUE IMAGE ---
+        // Si image_url existe et n'est pas vide, on affiche l'image. Sinon l'émoji.
+        const visualContent = (event.image_url && event.image_url !== "") 
+            ? `<img src="${event.image_url}" alt="${event.titre}" class="w-full h-full object-cover">`
+            : `<div class="text-5xl group-hover:scale-110 transition-transform">${emoji}</div>`;
+
         return `
-        <a href="detail_evenement.html?id=${event.id_evenement}" class="bg-[#0B0B0F] border border-[#27272A] p-6 rounded-3xl space-y-4 hover:border-[#A78BFA]/50 transition-all group block h-full">
-            <div class="flex justify-center items-center h-28 bg-[#18181B] rounded-2xl text-4xl group-hover:scale-105 transition-transform">${emoji}</div>
+        <a href="detail_evenement.html?id=${event.id_evenement}" class="card bg-[#18181B] border border-[#27272A] p-5 rounded-3xl space-y-4 hover:border-[#A78BFA]/50 hover:bg-[#1c1c21] transition-all group block">
+            
+            <!-- Zone Visuelle -->
+            <div class="relative w-full h-44 bg-[#0B0B0F] rounded-2xl flex justify-center items-center overflow-hidden border border-[#27272A]">
+                ${visualContent}
+                <div class="absolute top-3 left-3 px-2 py-1 rounded-md bg-[#0B0B0F]/80 backdrop-blur-md border border-[#27272A] text-[9px] font-black text-[#A78BFA] uppercase tracking-widest">
+                    ${event.type_evenement}
+                </div>
+            </div>
+            
             <div class="space-y-2">
-                <div class="text-[10px] font-black text-[#A78BFA] uppercase tracking-widest">${event.type_evenement}</div>
-                <h3 class="text-xl font-bold italic text-white">${event.titre}</h3>
-                <p class="text-xs text-[#A1A1AA] line-clamp-2">${event.description}</p>
-                <div class="flex justify-between items-center pt-4 border-t border-[#27272A] mt-4">
-                    <span class="text-[11px] text-[#52525B]">📍 ${event.lieu}</span>
-                    <span class="text-xs font-bold text-[#A78BFA]">Détails →</span>
+                <h3 class="text-lg font-bold italic text-white leading-tight group-hover:text-[#A78BFA] transition-colors">${event.titre}</h3>
+                <p class="text-xs text-[#A1A1AA] line-clamp-2 leading-relaxed">${event.description}</p>
+                
+                <div class="flex justify-between items-center pt-4 border-t border-[#27272A] mt-4 text-[#52525B]">
+                    <span class="text-[10px] flex items-center gap-1.5 font-medium">📍 ${event.lieu}</span>
+                    <span class="text-[10px] font-bold text-[#A78BFA] group-hover:translate-x-1 transition-all">Détails →</span>
                 </div>
             </div>
         </a>`;
     }).join('');
-}
 
-function updateButtonStyles() {
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        const type = btn.getAttribute('data-type').toUpperCase();
-        const isActive = type === 'ALL' ? activeFilters.size === 0 : activeFilters.has(type);
-        
-        if (isActive) {
-            btn.classList.add('bg-[#A78BFA]', 'text-[#0B0B0F]', 'font-bold');
-            btn.classList.remove('bg-[#0B0B0F]', 'text-[#A1A1AA]');
-            btn.style.borderColor = '#A78BFA';
-        } else {
-            btn.classList.remove('bg-[#A78BFA]', 'text-[#0B0B0F]', 'font-bold');
-            btn.classList.add('bg-[#0B0B0F]', 'text-[#A1A1AA]');
-            btn.style.borderColor = '#27272A';
-        }
-    });
+    if (window.lucide) lucide.createIcons();
 }
 
 function setupFilters() {
-    updateButtonStyles();
-
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const type = btn.getAttribute('data-type').toUpperCase();
-
-            if (type === 'ALL') {
-                activeFilters.clear();
-            } else {
-                if (activeFilters.has(type)) {
-                    activeFilters.delete(type);
-                } else {
-                    activeFilters.add(type);
-                }
-            }
-
-            updateButtonStyles();
-            displayEvents(getFilteredEvents());
-        });
+    const buttons = document.querySelectorAll('.filter-btn');
+    buttons.forEach(btn => {
+        btn.onclick = () => {
+            buttons.forEach(b => b.className = "filter-btn px-4 py-2 rounded-xl bg-[#18181B] border border-[#27272A] text-[#A1A1AA] text-xs hover:bg-[#27272A] transition-all");
+            btn.className = "filter-btn active px-4 py-2 rounded-xl bg-[#A78BFA] text-[#0B0B0F] font-bold text-xs transition-all";
+            
+            const type = btn.getAttribute('data-type');
+            const filtered = (type === 'ALL') ? allEvents : allEvents.filter(e => e.type_evenement === type);
+            displayEvents(filtered);
+        };
     });
 }
 
 function setupSearch() {
-    const searchInput = document.getElementById('search-input');
-    if (searchInput) {
-        // On utilise 'input' pour que la recherche soit instantanée à chaque touche
-        searchInput.addEventListener('input', () => {
-            const filtered = getFilteredEvents();
+    const searchInput = document.querySelector('input[type="text"]');
+    if(searchInput) {
+        searchInput.oninput = (e) => {
+            const val = e.target.value.toLowerCase();
+            const filtered = allEvents.filter(ev => ev.titre.toLowerCase().includes(val) || ev.description.toLowerCase().includes(val));
             displayEvents(filtered);
-        });
+        };
     }
 }
 
