@@ -4,68 +4,87 @@
     <meta charset="UTF-8">
     <title>Campus Melody - Calendrier</title>
     <link rel="stylesheet" href="Style.css">
+    <!-- Importation de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Importation de la librairie d'icônes Lucide -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen">
-    <div class="flex min-h-screen">
-        <!-- SIDEBAR -->
-        <aside class="w-64 bg-[#18181B] border-r border-[#27272A] flex flex-col h-screen sticky top-0">
-            <div class="p-8 flex items-center gap-3">
-                <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
-                <h1 class="text-sm font-bold">Campus Melody</h1>
-            </div>
-            <nav class="flex-1 px-3"><div id="sidebar-nav" class="space-y-1"></div></nav>
-        </aside>
+<body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen font-sans flex">
 
-        <main class="flex-1 p-10 overflow-y-auto">
-            <div class="top-bar w-full mb-6 flex justify-between items-center"> 
+    <!-- SIDEBAR (Remplie par navigation.js) -->
+    <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col h-screen sticky top-0">
+        <div class="p-8 flex items-center gap-3 border-b border-[#27272A]">
+            <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
+            <h1 class="text-sm font-bold">Campus Melody</h1>
+        </div>
+        <nav class="flex-1 px-3 py-4">
+            <p class="text-[10px] text-[#A1A1AA] uppercase px-3 mb-4 tracking-widest font-semibold">Pages</p>
+            <div id="sidebar-nav" class="space-y-1"></div>
+        </nav>
+    </aside>
+
+    <!-- CONTENU PRINCIPAL -->
+    <main class="flex-1 overflow-y-auto px-8 py-10">
+        
+        <!-- GRANDE CASE GRISE -->
+        <div class="bg-[#18181B] rounded-3xl p-8 border border-[#27272A] max-w-6xl mx-auto shadow-xl">
+            
+            <!-- TOPBAR -->
+            <div class="flex justify-between items-center mb-6 border-b border-[#27272A] pb-6"> 
                 <div>
-                    <h2 class="text-3xl font-bold">Calendrier des événements</h2>
-                    <p class="text-[#A1A1AA]">Vue mensuelle de la programmation</p>
+                    <h2 class="text-3xl font-bold tracking-tight text-[#F5F5F7]">Calendrier</h2>
+                    <p class="text-sm text-[#A1A1AA]">Vue mensuelle de la programmation</p>
                 </div>
-                <div class="user-actions flex gap-3"><button class="icon-btn">🔔</button><div class="user-avatar">JM</div></div>
+                <div class="flex items-center space-x-3">
+                    <a href="notifications.html" class="w-9 h-9 bg-[#0B0B0F] border border-[#27272A] rounded-xl flex items-center justify-center text-sm hover:bg-[#27272A] transition">🔔</a>
+                    <a href="profil.html" id="user-avatar-link" class="w-10 h-10 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-[11px] font-bold text-[#A78BFA] hover:bg-[#A78BFA]/30 transition shadow-lg shadow-[#A78BFA]/5">
+                        --
+                    </a>
+                </div>
             </div>
 
-            <a href="Catalogue.html" class="text-[#A78BFA] text-sm hover:underline flex items-center gap-2 mb-8">
+            <!-- LIEN RETOUR -->
+            <a href="Catalogue.html" class="text-[#A78BFA] text-xs font-bold hover:underline inline-flex items-center gap-2 mb-8 uppercase tracking-widest">
                 <i data-lucide="arrow-left" class="w-4 h-4"></i> Retour au catalogue
             </a>
 
-            <!-- CADRE DU CALENDRIER -->
-            <div class="w-full bg-[#18181B] border border-[#27272A] rounded-3xl p-8">
+            <!-- SECTION CALENDRIER (Case noire interne pour faire ressortir la grille) -->
+            <div class="bg-[#0B0B0F] border border-[#27272A] rounded-2xl p-6 shadow-inner">
+                
                 <!-- Navigation du Mois -->
-                <div class="flex justify-between items-center mb-12">
-                    <div class="flex gap-4">
-                        <button id="prevMonth" class="w-10 h-10 rounded-xl bg-[#27272A] flex items-center justify-center hover:bg-[#A78BFA] hover:text-[#0B0B0F] transition-all">
-                            <i data-lucide="chevron-left"></i>
+                <div class="flex justify-between items-center mb-10">
+                    <div class="flex gap-3">
+                        <button id="prevMonth" class="w-10 h-10 rounded-xl bg-[#18181B] border border-[#27272A] flex items-center justify-center hover:border-[#A78BFA] text-[#A1A1AA] hover:text-[#A78BFA] transition-all">
+                            <i data-lucide="chevron-left" class="w-5 h-5"></i>
                         </button>
-                        <button id="nextMonth" class="w-10 h-10 rounded-xl bg-[#27272A] flex items-center justify-center hover:bg-[#A78BFA] hover:text-[#0B0B0F] transition-all">
-                            <i data-lucide="chevron-right"></i>
+                        <button id="nextMonth" class="w-10 h-10 rounded-xl bg-[#18181B] border border-[#27272A] flex items-center justify-center hover:border-[#A78BFA] text-[#A1A1AA] hover:text-[#A78BFA] transition-all">
+                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
                         </button>
                     </div>
-                    <h3 class="text-3xl font-bold tracking-tight" id="monthDisplay">Octobre 2026</h3>
-                    <div class="w-20"></div> <!-- Spacer pour l'équilibre visuel -->
+                    <h3 class="text-2xl font-bold tracking-tight text-white" id="monthDisplay">Octobre 2026</h3>
+                    <div class="w-20 hidden md:block"></div> 
                 </div>
 
                 <!-- En-têtes Jours -->
-                <div class="grid grid-cols-7 gap-4 mb-6">
-                    <div class="text-center text-[11px] font-black text-[#52525B] uppercase tracking-[0.2em]">Lun</div>
-                    <div class="text-center text-[11px] font-black text-[#52525B] uppercase tracking-[0.2em]">Mar</div>
-                    <div class="text-center text-[11px] font-black text-[#52525B] uppercase tracking-[0.2em]">Mer</div>
-                    <div class="text-center text-[11px] font-black text-[#52525B] uppercase tracking-[0.2em]">Jeu</div>
-                    <div class="text-center text-[11px] font-black text-[#52525B] uppercase tracking-[0.2em]">Ven</div>
-                    <div class="text-center text-[11px] font-black text-[#52525B] uppercase tracking-[0.2em]">Sam</div>
-                    <div class="text-center text-[11px] font-black text-[#52525B] uppercase tracking-[0.2em]">Dim</div>
+                <div class="grid grid-cols-7 gap-2 mb-4">
+                    <div class="text-center text-[10px] font-black text-[#52525B] uppercase tracking-widest py-2">Lun</div>
+                    <div class="text-center text-[10px] font-black text-[#52525B] uppercase tracking-widest py-2">Mar</div>
+                    <div class="text-center text-[10px] font-black text-[#52525B] uppercase tracking-widest py-2">Mer</div>
+                    <div class="text-center text-[10px] font-black text-[#52525B] uppercase tracking-widest py-2">Jeu</div>
+                    <div class="text-center text-[10px] font-black text-[#52525B] uppercase tracking-widest py-2">Ven</div>
+                    <div class="text-center text-[10px] font-black text-[#52525B] uppercase tracking-widest py-2">Sam</div>
+                    <div class="text-center text-[10px] font-black text-[#52525B] uppercase tracking-widest py-2">Dim</div>
                 </div>
 
                 <!-- Grille des Jours -->
-                <div id="calendarGrid" class="grid grid-cols-7 gap-4">
+                <div id="calendarGrid" class="grid grid-cols-7 gap-2">
                     <!-- Rempli par calendrier.js -->
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
+    </main>
 
+    <!-- CHARGEMENT DES SCRIPTS -->
     <script src="navigation.js"></script>
     <script src="calendrier.js"></script>
 </body>
