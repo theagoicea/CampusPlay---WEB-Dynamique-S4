@@ -40,7 +40,7 @@
                 </div>
                 <div class="flex items-center space-x-3">
                     <a href="notifications.html" class="w-10 h-10 bg-[#0B0B0F] border border-[#27272A] rounded-xl flex items-center justify-center hover:bg-[#27272A] transition">🔔</a>
-                    <a href="profil.htmk" class="w-10 h-10 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-[11px] font-bold text-[#A78BFA] hover:bg-[#A78BFA]/30 transition shadow-lg shadow-[#A78BFA]/5">
+                    <a href="profil.html" class="w-10 h-10 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-[11px] font-bold text-[#A78BFA] hover:bg-[#A78BFA]/30 transition shadow-lg shadow-[#A78BFA]/5">
                         <?= $initiales ?>
                     </a>
                 </div>
