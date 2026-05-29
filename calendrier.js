@@ -55,9 +55,11 @@ async function loadCalendar() {
             if(e.type_evenement === 'WORKSHOP') icon = '🎧';
             if(e.type_evenement === 'JAM SESSION') icon = '🎷';
             return `
-                <div title="${e.titre}" class="text-[10px] bg-[#A78BFA]/10 text-[#A78BFA] p-1.5 rounded-lg border border-[#A78BFA]/20 truncate font-medium">
+                <a href="detail_evenement.html?id=${e.id_evenement}" 
+                   title="Voir les détails de : ${e.titre}" 
+                   class="block text-[9px] bg-[#A78BFA]/10 text-[#A78BFA] p-1.5 rounded-lg border border-[#A78BFA]/20 truncate font-medium hover:bg-[#A78BFA]/20 hover:border-[#A78BFA]/40 transition-all">
                     ${icon} ${e.titre}
-                </div>`;
+                </a>`;
         }).join('');
 
         dayCell.innerHTML = `
