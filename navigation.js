@@ -16,7 +16,6 @@ async function loadSidebar() {
         { name: 'Accueil', icon: 'home', url: 'accueil.html' },
         { name: 'Catalogue', icon: 'calendar', url: 'catalogue.html' },
         { name: 'Réservations', icon: 'settings', url: 'reservations.php' },
-        { name: 'Evénements', icon: 'music', url: 'evenements.html' }
     ];
 
     if (user.is_logged) {
@@ -28,10 +27,10 @@ async function loadSidebar() {
     menuItems.push({ name: 'Notifications', icon: 'bell', url: 'notifications.html' });
 
     if (user.role === 'Admin') {
-        menuItems.push({ name: 'Tableau de bord Admin', icon: 'layout-grid', url: 'admin.html' });
+        menuItems.push({ name: 'Tableau de bord Admin', icon: 'layout-grid', url: 'admin.php' });
     }
 
-    menuItems.push({ name: 'Forums', icon: 'message-square', url: 'forums.html' });
+    menuItems.push({ name: 'Forum', icon: 'message-square', url: 'forums.html' });
 
     navDiv.innerHTML = menuItems.map(item => {
         const stateClasses = (currentPage.toLowerCase() === item.url.toLowerCase()) ? activeClasses : inactiveClasses;
