@@ -5,7 +5,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 session_start();
-require_once 'configuration.php'; // On suppose que ton fichier de connexion s'appelle ainsi
+require_once 'configuration.php'; 
 
 // 2. Sécurité : redirection vers l'authentification si l'utilisateur n'est pas connecté
 if (!isset($_SESSION['user_id'])) {
@@ -50,19 +50,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-// 5. Gestion des filtres et calcul des 10 prochains jours (Action GET)
+// 5. Gestion des filtres et calcul des 30 prochains jours (Action GET)
 $activeTab = $_GET['tab'] ?? 'salles'; 
 $selectedDate = $_GET['date'] ?? date('Y-m-d');
 $selectedResourceId = $_GET['id_ressource'] ?? null;
 
 // Génération dynamique des 10 prochains jours pour le sélecteur horizontal
 $dates = [];
-for ($i = 0; $i < 10; $i++) {
+for ($i = 0; $i < 30; $i++) {
     $d = new DateTime();
     $d->modify("+$i day");
+	
+    $daysFR = ['Mon'=>'Lun','Tue'=>'Mar','Wed'=>'Mer','Thu'=>'Jeu','Fri'=>'Ven','Sat'=>'Sam','Sun'=>'Dim'];
+    $dayNameStr = $d->format('D');
+    $dayLabel = ($i === 0 ? "Auj." : ($i === 1 ? "Dem." : ($daysFR[$dayNameStr] ?? $dayNameStr)));
+
     $dates[] = [
         'full' => $d->format('Y-m-d'),
-        'dayName' => ($i === 0 ? "Auj." : ($i === 1 ? "Dem." : $d->format('D'))),
+        'dayName' => $dayLabel,
         'dayNum' => $d->format('d'),
         'month' => $d->format('M')
     ];
@@ -90,5 +95,5 @@ if ($selectedResourceId) {
     }
 }
 
-// 8. APPEL DE LA VUE (Le fichier HTML/Design)
+// 8. APPEL DE LA VUE (Le fichier HTML)
 require_once 'reservations_view.php';
