@@ -48,9 +48,10 @@ function displayEvents(events) {
         
         // --- LOGIQUE IMAGE ---
         // Si image_url existe et n'est pas vide, on affiche l'image. Sinon l'émoji.
-        const visualContent = (event.image_url && event.image_url !== "") 
-            ? `<img src="${event.image_url}" alt="${event.titre}" class="w-full h-full object-cover">`
-            : `<div class="text-5xl group-hover:scale-110 transition-transform">${emoji}</div>`;
+        // Remplace la ligne du visualContent par celle-ci pour gérer les erreurs d'image
+const visualContent = (event.image_url && event.image_url !== "") 
+    ? `<img src="${event.image_url}" alt="${event.titre}" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<div class=\'text-5xl\'>${emoji}</div>'">`
+    : `<div class="text-5xl group-hover:scale-110 transition-transform">${emoji}</div>`;
 
         return `
         <a href="detail_evenement.html?id=${event.id_evenement}" class="card bg-[#18181B] border border-[#27272A] p-5 rounded-3xl space-y-4 hover:border-[#A78BFA]/50 hover:bg-[#1c1c21] transition-all group block">
@@ -76,15 +77,30 @@ function displayEvents(events) {
     }).join('');
 
     if (window.lucide) lucide.createIcons();
+
+    
 }
 
 function setupFilters() {
     const buttons = document.querySelectorAll('.filter-btn');
+    
     buttons.forEach(btn => {
         btn.onclick = () => {
-            buttons.forEach(b => b.className = "filter-btn px-4 py-2 rounded-xl bg-[#18181B] border border-[#27272A] text-[#A1A1AA] text-xs hover:bg-[#27272A] transition-all");
-            btn.className = "filter-btn active px-4 py-2 rounded-xl bg-[#A78BFA] text-[#0B0B0F] font-bold text-xs transition-all";
+            // 1. On remet tous les boutons en mode "inactif" (noir/gris)
+            buttons.forEach(b => {
+                b.style.background = "#0B0B0F";
+                b.style.color = "#A1A1AA";
+                b.style.border = "1px solid #27272A";
+                b.style.fontWeight = "normal";
+            });
+
+            // 2. On met le bouton cliqué en mode "actif" (violet)
+            btn.style.background = "#A78BFA";
+            btn.style.color = "#0B0B0F";
+            btn.style.border = "1px solid #A78BFA";
+            btn.style.fontWeight = "bold";
             
+            // 3. On filtre les événements comme avant
             const type = btn.getAttribute('data-type');
             const filtered = (type === 'ALL') ? allEvents : allEvents.filter(e => e.type_evenement === type);
             displayEvents(filtered);
