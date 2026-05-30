@@ -12,16 +12,9 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// 2. Connexion BDD (Identifiants MAMP)
-$host = 'localhost';
-$dbname = 'campusmelody';
-$username = 'root';
-$password = 'root'; 
+require_once 'configuration.php'; // Utilisons ton fichier de config pour plus de cohérence
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
     $id_user = $_SESSION['user_id'];
     $id_event = isset($_POST['id_evenement']) ? intval($_POST['id_evenement']) : 0;
 
@@ -38,12 +31,18 @@ try {
         exit;
     }
 
-    // 4. Vérifier les places
-    $stmt = $pdo->prepare("SELECT capacite_max, besoin_validation_inscription FROM evenement WHERE id_evenement = ?");
+    // 4. Récupérer les infos de l'événement (et de l'organisateur)
+    $stmt = $pdo->prepare("SELECT titre, id_organisateur, capacite_max, besoin_validation_inscription FROM evenement WHERE id_evenement = ?");
     $stmt->execute([$id_event]);
     $event = $stmt->fetch();
 
-    $count = $pdo->prepare("SELECT COUNT(*) FROM inscription WHERE id_evenement = ? AND statut_inscription != 'Annulé'");
+    if (!$event) {
+        echo json_encode(['success' => false, 'error' => 'Événement introuvable.']);
+        exit;
+    }
+
+    // Vérifier les places
+    $count = $pdo->prepare("SELECT COUNT(*) FROM inscription WHERE id_evenement = ? AND statut_inscription != 'Refusé'");
     $count->execute([$id_event]);
     if ($count->fetchColumn() >= $event['capacite_max']) {
         echo json_encode(['success' => false, 'error' => 'Événement complet.']);
@@ -54,6 +53,30 @@ try {
     $statut = ($event['besoin_validation_inscription'] == 1) ? 'En attente' : 'Confirmé';
     $insert = $pdo->prepare("INSERT INTO inscription (id_utilisateur, id_evenement, statut_inscription) VALUES (?, ?, ?)");
     $insert->execute([$id_user, $id_event, $statut]);
+
+    // --- NOUVEAU : ENVOI DES NOTIFICATIONS ---
+
+    // A. Récupérer le prénom de l'utilisateur qui s'inscrit (pour l'organisateur)
+    $stmtU = $pdo->prepare("SELECT prenom FROM utilisateur WHERE id_utilisateur = ?");
+    $stmtU->execute([$id_user]);
+    $user_name = $stmtU->fetchColumn();
+
+    // B. Notification pour l'UTILISATEUR qui s'inscrit
+    $msg_user = ($statut === 'En attente') 
+        ? "Ta demande pour '" . $event['titre'] . "' est en attente de validation par l'organisateur."
+        : "Inscription confirmée pour '" . $event['titre'] . "'. À bientôt !";
+    
+    $pdo->prepare("INSERT INTO notification (titre, message, type_notification, id_destinataire) VALUES (?, ?, ?, ?)")
+        ->execute(["Inscription", $msg_user, "inscription-evenement", $id_user]);
+
+    // C. Notification pour l'ORGANISATEUR (seulement si besoin de validation ou pour info)
+    $msg_orga = "$user_name vient de s'inscrire à ton événement '" . $event['titre'] . "'.";
+    if ($statut === 'En attente') {
+        $msg_orga = "$user_name attend ta validation pour l'événement '" . $event['titre'] . "'.";
+    }
+
+    $pdo->prepare("INSERT INTO notification (titre, message, type_notification, id_destinataire) VALUES (?, ?, ?, ?)")
+        ->execute(["Nouvelle inscription", $msg_orga, "inscription-evenement", $event['id_organisateur']]);
 
     echo json_encode(['success' => true, 'message' => 'Inscription réussie !']);
 
