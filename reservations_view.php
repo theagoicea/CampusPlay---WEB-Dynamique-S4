@@ -11,7 +11,7 @@ function getResourceIcon($nom, $type) {
 	if (strpos($nom, 'rock') !== false) return '🎸';
     if (strpos($nom, 'synthé') !== false || strpos($nom, 'clavier') !== false) return '🎹';
     if (strpos($nom, 'micro') !== false) return '🎙️';
-    if (strpos($nom, '	carte son') !== false || strpos($nom, 'interface') !== false) return '🎚️';
+    if (strpos($nom, 'carte son') !== false || strpos($nom, 'interface') !== false) return '🎚️';
     if (strpos($nom, 'casque') !== false) return '🎧';
     if (strpos($nom, 'enceinte') !== false) return '🔊';
     if (strpos($nom, 'câble') !== false) return '🔌';
