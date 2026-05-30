@@ -36,7 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $dt_end = $date_val . ' ' . $end_time . ':00';
 
     try {
-        // id_ressource (avec deux s) est le nom de la colonne dans ta table 'reservation'
         $stmt = $pdo->prepare("INSERT INTO reservation (date_debut, date_fin, id_utilisateur, id_ressource, statut) VALUES (?, ?, ?, ?, 'En attente')");
         $stmt->execute([$dt_start, $dt_end, $user_id, $res_id]);
         $message_success = "Ta demande de réservation a bien été envoyée !";
