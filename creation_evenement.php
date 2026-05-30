@@ -31,13 +31,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare($sql);
         $stmt->execute([$_POST['titre'], $_POST['description'], $_POST['categorie'], $_POST['lieu'], $_POST['date_debut'], $_POST['date_fin'], $_POST['capacite'], $image_name, isset($_POST['reserve_membres']) ? 1 : 0, isset($_POST['besoin_validation']) ? 1 : 0, $user_id]);
 
+        $event_title = $_POST['titre'];
+
+        // 1. Notification pour l'ORGANISATEUR (Confirmation d'envoi)
+        $msg_user = "Ton projet d'événement '$event_title' a bien été soumis à l'administration.";
+        $pdo->prepare("INSERT INTO notification (titre, message, type_notification, id_destinataire) VALUES (?, ?, 'creation-evenement', ?)")
+            ->execute(["Projet soumis", $msg_user, $user_id]);
+
+        // 2. Notification pour TOUS LES ADMINS (Alerte Admin)
         $admins = $pdo->query("SELECT id_utilisateur FROM utilisateur WHERE role = 'Admin'")->fetchAll();
-        $notif = $pdo->prepare("INSERT INTO notification (titre, message, type_notification, id_destinataire) VALUES (?, ?, ?, ?)");
-        foreach ($admins as $a) { $notif->execute(["Nouvel événement", "L'événement '".$_POST['titre']."' attend validation.", "création-événement", $a['id_utilisateur']]); }
+        $notifAdmin = $pdo->prepare("INSERT INTO notification (titre, message, type_notification, id_destinataire) VALUES (?, ?, 'creation-evenement', ?)");
+        
+        foreach ($admins as $a) { 
+            $notifAdmin->execute([
+                "Nouvel événement", 
+                "L'événement '$event_title' attend votre validation.", 
+                $a['id_utilisateur']
+            ]); 
+        }
 
         $pdo->commit();
         $message_success = "Événement envoyé en validation !";
-    } catch (Exception $e) { $pdo->rollBack(); $message_error = "Erreur : " . $e->getMessage(); }
+    } catch (Exception $e) { 
+        $pdo->rollBack(); 
+        $message_error = "Erreur : " . $e->getMessage(); 
+    }
+
 }
 
 $stmtUser = $pdo->prepare("SELECT prenom, nom FROM utilisateur WHERE id_utilisateur = ?");
