@@ -34,18 +34,18 @@ async function loadSidebar() {
 
     // Liens visibles par TOUT LE MONDE
     let menuItems = [
-        { name: 'Accueil', icon: 'home', url: 'index.php' },
-        { name: 'Événements', icon: 'calendar', url: 'evenements.php' },
+        { name: 'Accueil', icon: 'home', url: 'accueil.html' },
+        { name: 'Catalogue', icon: 'calendar', url: 'catalogue.html' },
     ];
 
     // Liens pour les utilisateurs CONNECTÉS
     if (user.is_logged) {
         menuItems.push({ name: 'Réservations', icon: 'clock', url: 'reservations.php' });
-        menuItems.push({ name: 'Notifications', icon: 'bell', url: 'notifications.php' });
-        menuItems.push({ name: 'Profil', icon: 'user', url: 'b_profil.php' });
+        menuItems.push({ name: 'Profil', icon: 'user', url: 'profil.html' });
+		menuItems.push({ name: 'Notifications', icon: 'bell', url: 'notifications.php' });
     } else {
         // Lien si NON CONNECTÉ
-        menuItems.push({ name: 'Connexion', icon: 'log-in', url: 'b_authentification.php' });
+        menuItems.push({ name: 'Connexion', icon: 'log-in', url: 'authentification.html' });
     }
 
     // Lien pour les ADMINS uniquement
@@ -54,7 +54,7 @@ async function loadSidebar() {
     }
 
     // Forum (toujours visible)
-    menuItems.push({ name: 'Forum', icon: 'message-square', url: 'forum.php' });
+    menuItems.push({ name: 'Forum', icon: 'message-square', url: 'forums.html' });
 
     // 4. Génération du HTML du menu
     navDiv.innerHTML = menuItems.map(item => {
