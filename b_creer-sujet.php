@@ -40,25 +40,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } 
 
     try {
-        // On commence une transaction (Sujet + 1er message)
         $pdo->beginTransaction();
 
         // 1. Création du sujet
         $stmtForum = $pdo->prepare("INSERT INTO forum (titre, categorie, id_createur) VALUES (?, ?, ?)");
         $stmtForum->execute([$titre, $categorie, $id_createur]);
-        
         $id_forum = $pdo->lastInsertId();
 
         // 2. Création du premier message
         $stmtMessage = $pdo->prepare("INSERT INTO message_forum (contenu, id_auteur, id_forum) VALUES (?, ?, ?)");
         $stmtMessage->execute([$contenu, $id_createur, $id_forum]);
 
-        // On valide la transaction
-        $pdo->commit();
+        // 3. NOTIFICATION (Cyan) - On prévient l'auteur que son sujet est en ligne
+        $msg_forum = "Ton nouveau sujet '$titre' a été publié avec succès sur le forum.";
+        $pdo->prepare("INSERT INTO notification (titre, message, type_notification, id_destinataire) VALUES (?, ?, 'forum', ?)")
+            ->execute(["Forum", $msg_forum, $id_createur]);
 
+        $pdo->commit();
         echo json_encode(['success' => true, 'redirect' => 'forums.html']);
         exit();
-
     } catch (Exception $e) {
         $pdo->rollBack(); // En cas d'erreur, on annule l'insertion
         echo json_encode(['success' => false, 'error_msg' => "Une erreur est survenue lors de la création du sujet."]);
