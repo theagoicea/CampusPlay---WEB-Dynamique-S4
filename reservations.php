@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 require_once 'configuration.php'; 
@@ -36,12 +37,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $dt_end = $date_val . ' ' . $end_time . ':00';
 
     try {
+        // 1. On récupère d'abord le nom de la ressource pour que la notif soit claire
+        $stmtName = $pdo->prepare("SELECT nom FROM ressource WHERE id_resource = ?");
+        $stmtName->execute([$res_id]);
+        $res_info = $stmtName->fetch();
+        $nom_ressource = $res_info ? $res_info['nom'] : "Ressource";
+
+        // 2. On insère la réservation (ton code existant)
         $stmt = $pdo->prepare("INSERT INTO reservation (date_debut, date_fin, id_utilisateur, id_ressource, statut) VALUES (?, ?, ?, ?, 'En attente')");
         $stmt->execute([$dt_start, $dt_end, $user_id, $res_id]);
+
+        // --- NOUVEAU : CRÉATION DE LA NOTIFICATION ---
+        
+        // A. Notification pour l'utilisateur (Confirmation de sa demande)
+        $notif_titre = "Demande envoyée";
+        $notif_msg = "Ta demande pour '$nom_ressource' le " . date('d/m', strtotime($date_val)) . " à $start_time est en attente de validation.";
+        
+        // On choisit le type en fonction de l'onglet pour avoir la bonne couleur
+        $notif_type = ($activeTab === 'salles') ? 'rappel-evenement' : 'rappel-materiel';
+
+        $stmtNotifUser = $pdo->prepare("INSERT INTO notification (titre, message, type_notification, id_destinataire) VALUES (?, ?, ?, ?)");
+        $stmtNotifUser->execute([$notif_titre, $notif_msg, $notif_type, $user_id]);
+
+        // B. Notification pour les Admins (Pour qu'ils sachent qu'ils doivent valider)
+        // Selon ton image, les admins doivent être notifiés des demandes.
+        $msg_admin = "Nouvelle demande de réservation : '$nom_ressource' par " . ($user_data['prenom'] ?? 'Un utilisateur');
+        
+        $stmtAdmins = $pdo->prepare("SELECT id_utilisateur FROM utilisateur WHERE role = 'Admin'");
+        $stmtAdmins->execute();
+        $admins = $stmtAdmins->fetchAll();
+
+        foreach ($admins as $admin) {
+            $stmtNotifAdmin = $pdo->prepare("INSERT INTO notification (titre, message, type_notification, id_destinataire) VALUES (?, ?, ?, ?)");
+            // On utilise 'creation-evenement' car il a le label "Admin" (orange/jaune) dans ton style
+            $stmtNotifAdmin->execute(["Validation requise", $msg_admin, "creation-evenement", $admin['id_utilisateur']]);
+        }
+
         $message_success = "Ta demande de réservation a bien été envoyée !";
     } catch (Exception $e) {
         $message_success = "Erreur lors de la réservation : " . $e->getMessage();
     }
+    
 }
 
 // 5. Gestion des filtres et calcul des 30 prochains jours (Action GET)
