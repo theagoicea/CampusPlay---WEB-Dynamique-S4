@@ -1,5 +1,5 @@
 <?php
-$host = '127.0.0.1'; // On utilise l'IP, c'est plus sûr
+$host = 'localhost'; 
 $db   = 'campusmelody'; 
 $user = 'root';
 $pass = 'root'; 
