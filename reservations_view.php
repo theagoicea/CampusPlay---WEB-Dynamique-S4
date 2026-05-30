@@ -23,6 +23,7 @@ function getResourceIcon($nom, $type) {
     return '📦';
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -30,6 +31,10 @@ function getResourceIcon($nom, $type) {
     <title>Campus Melody - Réservations</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
 <body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen font-sans flex">
 
@@ -48,7 +53,6 @@ function getResourceIcon($nom, $type) {
     </aside>
 
     <main class="flex-1 overflow-y-auto px-8 py-10">
-        <!-- CASE DE TOUR GRISE -->
         <div class="bg-[#18181B] rounded-3xl p-8 border border-[#27272A] max-w-5xl mx-auto shadow-xl">
             
             <!-- TopBar -->
@@ -58,27 +62,37 @@ function getResourceIcon($nom, $type) {
                     <p class="text-sm text-[#A1A1AA]">Planifiez vos répétitions et gérez votre matériel</p>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <a href="notifications.php" class="w-9 h-9 bg-[#0B0B0F] border border-[#27272A] rounded-xl flex items-center justify-center text-sm hover:bg-[#27272A] transition">🔔</a>
-                    <a href="b_profil.php" id="user-avatar-link" class="w-10 h-10 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-[11px] font-bold text-[#A78BFA] hover:bg-[#A78BFA]/30 transition shadow-lg shadow-[#A78BFA]/5">
+                    <a href="notifications.html" class="w-9 h-9 bg-[#0B0B0F] border border-[#27272A] rounded-xl flex items-center justify-center text-sm hover:bg-[#27272A] transition">🔔</a>
+                    <a href="profil.html" id="user-avatar-link" class="w-10 h-10 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-[11px] font-bold text-[#A78BFA] hover:bg-[#A78BFA]/30 transition shadow-lg shadow-[#A78BFA]/5">
                         --
                     </a>
                 </div>
             </div>
 
-            <!-- Message de succès -->
             <?php if ($message_success): ?>
                 <div class="mb-6 p-4 bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl text-sm"><?= $message_success ?></div>
             <?php endif; ?>
 
-            <!-- Sélecteur de Date -->
-            <div class="flex gap-2 overflow-x-auto pb-6">
-                <?php foreach ($dates as $d): ?>
-                    <a href="?date=<?= $d['full'] ?>&tab=<?= $activeTab ?>" class="flex flex-col items-center px-4 py-3 rounded-xl border transition min-w-[75px] <?= ($selectedDate === $d['full'] ? 'bg-[#A78BFA] border-[#A78BFA] text-[#0B0B0F]' : 'bg-[#0B0B0F] border-[#27272A] text-[#A1A1AA] hover:border-[#A78BFA]/50') ?>">
-                        <span class="text-[10px] font-bold uppercase"><?= $d['dayName'] ?></span>
-                        <span class="text-lg font-bold"><?= $d['dayNum'] ?></span>
-                        <span class="text-[10px]"><?= $d['month'] ?></span>
-                    </a>
-                <?php endforeach; ?>
+            <!-- Sélecteur de Date avec Navigation -->
+            <div class="relative mb-8 group">
+                <button onclick="scrollDates(-300)" class="absolute left-[-15px] top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-[#18181B] border border-[#27272A] rounded-full flex items-center justify-center text-[#A78BFA] shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[#27272A]">
+                    <i data-lucide="chevron-left"></i>
+                </button>
+
+                <div id="date-scroll-container" class="flex gap-2 overflow-x-auto pb-2 no-scrollbar scroll-smooth">
+                    <?php foreach ($dates as $d): ?>
+                        <a href="?date=<?= $d['full'] ?>&tab=<?= $activeTab ?><?= $selectedResourceId ? '&id_ressource='.$selectedResourceId : '' ?>" 
+                           class="flex flex-col items-center px-4 py-3 rounded-xl border transition min-w-[75px] shrink-0 <?= ($selectedDate === $d['full'] ? 'bg-[#A78BFA] border-[#A78BFA] text-[#0B0B0F]' : 'bg-[#0B0B0F] border-[#27272A] text-[#A1A1AA] hover:border-[#A78BFA]/50') ?>">
+                            <span class="text-[10px] font-bold uppercase"><?= $d['dayName'] ?></span>
+                            <span class="text-lg font-bold"><?= $d['dayNum'] ?></span>
+                            <span class="text-[10px]"><?= $d['month'] ?></span>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+
+                <button onclick="scrollDates(300)" class="absolute right-[-15px] top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-[#18181B] border border-[#27272A] rounded-full flex items-center justify-center text-[#A78BFA] shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[#27272A]">
+                    <i data-lucide="chevron-right"></i>
+                </button>
             </div>
 
             <!-- Onglets -->
@@ -88,19 +102,17 @@ function getResourceIcon($nom, $type) {
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
-                
                 <!-- Liste des ressources -->
                 <div class="space-y-2">
                     <?php foreach ($resources as $res): ?>
                         <a href="?date=<?= $selectedDate ?>&tab=<?= $activeTab ?>&id_ressource=<?= $res['id_resource'] ?>" class="flex items-center gap-3 px-4 py-4 rounded-xl border transition-all <?= ($selectedResourceId == $res['id_resource'] ? 'border-[#A78BFA] bg-[#A78BFA]/10' : 'bg-[#0B0B0F] border-[#27272A] hover:border-[#A78BFA]/50 hover:bg-[#A78BFA]/5') ?>">
-                            <!-- APPEL DE LA FONCTION POUR L'EMOJI -->
                             <span class="text-xl"><?php echo getResourceIcon($res['nom'], $activeTab == 'salles' ? 'Studio' : 'Matériel'); ?></span>
                             <p class="text-sm font-semibold truncate"><?= htmlspecialchars($res['nom']) ?></p>
                         </a>
                     <?php endforeach; ?>
                 </div>
 
-                <!-- Case des Créneaux -->
+                <!-- Créneaux -->
                 <div class="bg-[#0B0B0F] border border-[#27272A] rounded-2xl p-6 h-fit">
                     <?php if (!$selectedResourceId): ?>
                         <p class="text-center text-[#A1A1AA] py-10 italic">Choisissez une ressource à gauche</p>
@@ -112,7 +124,7 @@ function getResourceIcon($nom, $type) {
                             ?>
                                 <div class="p-4 rounded-xl border border-[#27272A] transition-all <?= $is_taken 
                                     ? 'opacity-40 bg-[#18181B] cursor-not-allowed' 
-                                    : 'bg-[#18181B] hover:border-[#A78BFA]/60 hover:bg-[#A78BFA]/5 hover:shadow-lg hover:shadow-[#A78BFA]/5 cursor-pointer' ?>">
+                                    : 'bg-[#18181B] hover:border-[#A78BFA]/60 hover:bg-[#A78BFA]/5 cursor-pointer' ?>">
                                     <div class="flex justify-between items-center">
                                         <div>
                                             <p class="text-sm font-bold"><?= $slot ?></p>
@@ -138,5 +150,23 @@ function getResourceIcon($nom, $type) {
     </main>
 
     <script src="navigation.js"></script>
+    <script>
+        lucide.createIcons();
+
+        function scrollDates(amount) {
+            const container = document.getElementById('date-scroll-container');
+            container.scrollBy({ left: amount, behavior: 'smooth' });
+        }
+
+        // Auto-centrage de la date sélectionnée
+        window.addEventListener('load', () => {
+            const activeDate = document.querySelector('.bg-\\[\\#A78BFA\\]'); 
+            if (activeDate) {
+                const container = document.getElementById('date-scroll-container');
+                const offset = activeDate.offsetLeft - (container.offsetWidth / 2) + (activeDate.offsetWidth / 2);
+                container.scrollTo({ left: offset, behavior: 'auto' });
+            }
+        });
+    </script>
 </body>
 </html>
