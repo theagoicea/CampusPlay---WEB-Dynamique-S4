@@ -8,6 +8,8 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
+require_once 'notifications_rappel.php'; 
+
 
 // Action : Supprimer une notification
 if (isset($_POST['action']) && $_POST['action'] === 'delete' && isset($_POST['id_notif'])) {
