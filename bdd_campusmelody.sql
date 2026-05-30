@@ -1,7 +1,4 @@
--- ==========================================================
--- BDD CAMPUS MELODY - VERSION COMPLÈTE AVEC IMAGES STABLES
--- ==========================================================
-
+-- BDD Campus Melody
 DROP DATABASE IF EXISTS campusmelody;
 CREATE DATABASE campusmelody;
 USE campusmelody;
@@ -126,15 +123,27 @@ INSERT INTO utilisateur (id_utilisateur, nom, prenom, email, mot_de_passe, role,
 (6, 'Moreau', 'Emma', 'emma@campus.fr', 'root', 'Organisateur', TRUE, 'Validé');
 
 -- B. RESSOURCES
-INSERT INTO ressource (id_resource, nom, description, type_ressource, quantite_totale) VALUES 
-(1, 'Studio A - Piano', 'Équipé Steinway & Sons', 'Studio', 1),
-(2, 'Studio B - Rock', 'Équipé batterie DW et amplis Marshall', 'Studio', 1),
-(3, 'Studio C - Voix', 'Isolation acoustique pro pour chant', 'Studio', 1),
-(4, 'Studio M.A.O', 'Stations Ableton et enceintes Focal', 'Studio', 1),
-(5, 'Guitare Fender Strat', 'Série American Professional II', 'Instrument', 1),
-(6, 'Guitare Gibson Les Paul', 'Standard 60s Bourbon Burst', 'Instrument', 1),
-(11, 'Micro Shure SM58', 'Micro dynamique polyvalent', 'Matériel', 10),
-(13, 'Carte Son Focusrite', 'Interface audio USB', 'Matériel', 6);
+INSERT INTO ressource (nom, description, type_ressource, quantite_totale) VALUES 
+('Studio A - Piano', 'Équipé Steinway & Sons', 'Studio', 1),
+('Studio B - Rock', 'Équipé batterie DW et amplis Marshall', 'Studio', 1),
+('Studio C - Voix', 'Isolation acoustique pro pour chant', 'Studio', 1),
+('Studio M.A.O', 'Stations Ableton et enceintes Focal', 'Studio', 1),
+('Studio Podcasting', '4 micros Shure SM7B et mixeur Rode', 'Studio', 1),
+('Amphi Audio', 'Grande salle pour conférences musicales', 'Studio', 1),
+('Guitare Fender Stratocaster', 'Série American Professional II', 'Instrument', 1),
+('Guitare Gibson Les Paul', 'Standard 60s Bourbon Burst', 'Instrument', 1),
+('Basse Fender Jazz Bass', 'Basse électrique 4 cordes', 'Instrument', 1),
+('Batterie Roland V-Drums', 'Batterie électronique haut de gamme', 'Instrument', 1),
+('Synthétiseur Korg Minilogue', 'Polyphonic Analog Synthesizer', 'Instrument', 1),
+('Clavier Maître Arturia', '88 touches lestées', 'Instrument', 2),
+('Violon électrique Yamaha', 'Série Silent Violin', 'Instrument', 1),
+('Micro Shure SM58', 'Micro dynamique polyvalent', 'Matériel', 10),
+('Micro Rode NT1-A', 'Pack enregistrement complet', 'Matériel', 4),
+('Carte Son Focusrite 2i2', 'Interface audio USB', 'Matériel', 6),
+('Casque Beyerdynamic DT770', 'Casque de studio fermé 80 Ohm', 'Matériel', 8),
+('Enceinte Bose S1 Pro', 'Système de sonorisation portable', 'Matériel', 2),
+('Contrôleur DJ Pioneer', 'DDJ-FLX4 pour débutants et pros', 'Matériel', 1),
+('Câble XLR 10m', 'Câble blindé Neutrik', 'Matériel', 15);
 
 -- C. ÉVÉNEMENTS (Avec Images Corrigées)
 INSERT INTO evenement (id_evenement, titre, description, image_url, date_debut, date_fin, lieu, capacite_max, type_evenement, statut_validation, id_organisateur, est_reserve_membres) VALUES 
