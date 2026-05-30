@@ -1,5 +1,5 @@
 <?php
-// Petite fonction pour attribuer un émoji selon le nom de la ressource
+// Fonction pour attribuer un émoji selon le nom de la ressource
 function getResourceIcon($nom, $type) {
     $nom = strtolower($nom);
     if (strpos($nom, 'piano') !== false) return '🎹';
@@ -62,7 +62,7 @@ function getResourceIcon($nom, $type) {
                     <p class="text-sm text-[#A1A1AA]">Planifiez vos répétitions et gérez votre matériel</p>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <a href="notifications.html" class="w-9 h-9 bg-[#0B0B0F] border border-[#27272A] rounded-xl flex items-center justify-center text-sm hover:bg-[#27272A] transition">🔔</a>
+                    <a href="notifications.php" class="w-9 h-9 bg-[#0B0B0F] border border-[#27272A] rounded-xl flex items-center justify-center text-sm hover:bg-[#27272A] transition">🔔</a>
                     <a href="profil.html" id="user-avatar-link" class="w-10 h-10 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-[11px] font-bold text-[#A78BFA] hover:bg-[#A78BFA]/30 transition shadow-lg shadow-[#A78BFA]/5">
                         --
                     </a>
