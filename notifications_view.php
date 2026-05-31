@@ -1,20 +1,21 @@
 <?php
 function getNotifStyle($type) {
+    // On convertit en minuscule et on retire les accents pour la comparaison
+    $type = str_replace(['é', 'è', 'ê'], 'e', strtolower($type));
+
     switch ($type) {
         case 'rappel-evenement':
-            return ['dot' => 'bg-blue-400', 'badge' => 'bg-blue-500/10 text-blue-400 border-blue-500/20', 'label' => 'Visiteur · rappel-événement'];
+            return ['dot' => 'bg-blue-400', 'badge' => 'bg-blue-500/10 text-blue-400 border-blue-500/20', 'label' => 'Événement'];
         case 'forum':
-            return ['dot' => 'bg-cyan-400', 'badge' => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20', 'label' => 'Visiteur · forum'];
+            return ['dot' => 'bg-cyan-400', 'badge' => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20', 'label' => 'Forum'];
         case 'rappel-materiel':
-            return ['dot' => 'bg-orange-400', 'badge' => 'bg-orange-500/10 text-orange-400 border-orange-500/20', 'label' => 'Membre · rappel-matériel'];
+            return ['dot' => 'bg-orange-400', 'badge' => 'bg-orange-500/10 text-orange-400 border-orange-500/20', 'label' => 'Matériel'];
         case 'inscription-evenement':
-            return ['dot' => 'bg-violet-400', 'badge' => 'bg-violet-500/10 text-violet-400 border-violet-500/20', 'label' => 'Organisateur · inscription-événement'];
+            return ['dot' => 'bg-violet-400', 'badge' => 'bg-violet-500/10 text-violet-400 border-violet-500/20', 'label' => 'Inscription'];
         case 'adhesion-association':
-            return ['dot' => 'bg-pink-400', 'badge' => 'bg-pink-500/10 text-pink-400 border-pink-500/20', 'label' => 'Admin · adhésion-association'];
+            return ['dot' => 'bg-pink-400', 'badge' => 'bg-pink-500/10 text-pink-400 border-pink-500/20', 'label' => 'Adhésion'];
         case 'creation-evenement':
-            return ['dot' => 'bg-amber-400', 'badge' => 'bg-amber-500/10 text-amber-400 border-amber-500/20', 'label' => 'Admin · création-événement'];
-        case 'signalement':
-            return ['dot' => 'bg-amber-400', 'badge' => 'bg-amber-500/10 text-amber-400 border-amber-500/20', 'label' => 'Admin · signalement'];
+            return ['dot' => 'bg-amber-400', 'badge' => 'bg-amber-500/10 text-amber-400 border-amber-500/20', 'label' => 'Admin'];
         default:
             return ['dot' => 'bg-gray-400', 'badge' => 'bg-gray-500/10 text-gray-400 border-gray-500/20', 'label' => 'Notification'];
     }
@@ -71,8 +72,8 @@ function time_elapsed_string($datetime, $full = false) {
                 </div>
                 <div class="flex items-center space-x-3">
                     <a href="profil.html" id="user-avatar-link" class="w-10 h-10 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-[11px] font-bold text-[#A78BFA] hover:bg-[#A78BFA]/30 transition shadow-lg shadow-[#A78BFA]/5">
-                        --
-                    </a>
+                        <?= $initiales ?>
+                    </a> 
                 </div>
             </div>
 

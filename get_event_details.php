@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once 'configuration.php';
 header('Content-Type: application/json');
 
@@ -23,13 +24,23 @@ try {
         throw new Exception("Événement introuvable");
     }
 
-    // Calcul des places restantes (Capacité - Inscriptions confirmées)
-$sql_count = "SELECT COUNT(*) FROM inscription WHERE id_evenement = :id AND statut_inscription != 'Annulé'";
+    // Calcul des places restantes (Capacité - Inscriptions confirmées/en attente)
+    $sql_count = "SELECT COUNT(*) FROM inscription WHERE id_evenement = :id AND statut_inscription != 'Refusé' AND statut_inscription != 'Annulé'";
     $stmt_count = $pdo->prepare($sql_count);
     $stmt_count->execute(['id' => $id]);
     $inscrits = $stmt_count->fetchColumn();
 
     $event['places_restantes'] = max(0, $event['capacite_max'] - $inscrits);
+    
+    // Vérifier si l'utilisateur connecté est déjà inscrit
+    $event['est_inscrit'] = false;
+    if (isset($_SESSION['user_id'])) {
+        $stmt_check = $pdo->prepare("SELECT COUNT(*) FROM inscription WHERE id_utilisateur = :uid AND id_evenement = :eid AND statut_inscription != 'Refusé' AND statut_inscription != 'Annulé'");
+        $stmt_check->execute(['uid' => $_SESSION['user_id'], 'eid' => $id]);
+        if ($stmt_check->fetchColumn() > 0) {
+            $event['est_inscrit'] = true;
+        }
+    }
     
     echo json_encode($event);
 

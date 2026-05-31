@@ -1,53 +1,45 @@
 <?php
-function getNotifStyle($type) {
-    // On convertit en minuscule et on retire les accents pour la comparaison
-    $type = str_replace(['é', 'è', 'ê'], 'e', strtolower($type));
-
-    switch ($type) {
-        case 'rappel-evenement':
-            return ['dot' => 'bg-blue-400', 'badge' => 'bg-blue-500/10 text-blue-400 border-blue-500/20', 'label' => 'Événement'];
-        case 'forum':
-            return ['dot' => 'bg-cyan-400', 'badge' => 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20', 'label' => 'Forum'];
-        case 'rappel-materiel':
-            return ['dot' => 'bg-orange-400', 'badge' => 'bg-orange-500/10 text-orange-400 border-orange-500/20', 'label' => 'Matériel'];
-        case 'inscription-evenement':
-            return ['dot' => 'bg-violet-400', 'badge' => 'bg-violet-500/10 text-violet-400 border-violet-500/20', 'label' => 'Inscription'];
-        case 'adhesion-association':
-            return ['dot' => 'bg-pink-400', 'badge' => 'bg-pink-500/10 text-pink-400 border-pink-500/20', 'label' => 'Adhésion'];
-        case 'creation-evenement':
-            return ['dot' => 'bg-amber-400', 'badge' => 'bg-amber-500/10 text-amber-400 border-amber-500/20', 'label' => 'Admin'];
-        default:
-            return ['dot' => 'bg-gray-400', 'badge' => 'bg-gray-500/10 text-gray-400 border-gray-500/20', 'label' => 'Notification'];
-    }
-}
-
-function time_elapsed_string($datetime, $full = false) {
-    $now = new DateTime;
-    $ago = new DateTime($datetime);
-    $diff = $now->diff($ago);
-    $diff->w = floor($diff->d / 7);
-    $diff->d -= $diff->w * 7;
-    $string = array('y' => 'an', 'm' => 'mois', 'w' => 'semaine', 'd' => 'jour', 'h' => 'h', 'i' => 'min', 's' => 'sec');
-    foreach ($string as $k => &$v) {
-        if ($diff->$k) { $v = $diff->$k . ' ' . $v . ($diff->$k > 1 && $k != 'm' && $k != 'h' && $k != 'i' ? 's' : ''); } 
-        else { unset($string[$k]); }
-    }
-    if (!$full) $string = array_slice($string, 0, 1);
-    return $string ? 'Il y a ' . implode(', ', $string) : 'À l\'instant';
+// Fonction pour attribuer un émoji selon le nom de la ressource
+function getResourceIcon($nom, $type) {
+    $nom = strtolower($nom);
+    if (strpos($nom, 'piano') !== false) return '🎹';
+    if (strpos($nom, 'batterie') !== false) return '🥁';
+    if (strpos($nom, 'voix') !== false || strpos($nom, 'chant') !== false) return '🎤';
+    if (strpos($nom, 'm.a.o') !== false || strpos($nom, 'mao') !== false) return '🎧';
+    if (strpos($nom, 'guitare') !== false) return '🎸';
+    if (strpos($nom, 'basse') !== false) return '🎸';
+	if (strpos($nom, 'rock') !== false) return '🎸';
+    if (strpos($nom, 'synthé') !== false || strpos($nom, 'clavier') !== false) return '🎹';
+    if (strpos($nom, 'micro') !== false) return '🎙️';
+    if (strpos($nom, 'carte son') !== false || strpos($nom, 'interface') !== false) return '🎚️';
+    if (strpos($nom, 'casque') !== false) return '🎧';
+    if (strpos($nom, 'enceinte') !== false) return '🔊';
+    if (strpos($nom, 'câble') !== false) return '🔌';
+    if (strpos($nom, 'dj') !== false) return '💿';
+    
+    // Par défaut si rien n'est trouvé, on utilise le type
+    if ($type === 'Studio') return '🏠';
+    if ($type === 'Instrument') return '🎻';
+    return '📦';
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Campus Melody - Notifications</title>
+    <title>Campus Melody - Réservations</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
 <body class="bg-[#0B0B0F] text-[#F5F5F7] min-h-screen font-sans flex">
 
     <!-- SIDEBAR -->
-    <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col h-screen sticky top-0">
+    <aside class="w-64 shrink-0 bg-[#18181B] border-r border-[#27272A] flex flex-col h-screen sticky top-0 overflow-y-auto">
         <div class="px-6 py-8 border-b border-[#27272A]">
             <div class="flex items-center gap-3">
                 <div class="w-9 h-9 bg-[#A78BFA]/10 rounded-xl border border-[#A78BFA]/30 flex items-center justify-center text-lg">🎵</div>
@@ -61,72 +53,120 @@ function time_elapsed_string($datetime, $full = false) {
     </aside>
 
     <main class="flex-1 overflow-y-auto px-8 py-10">
-        <!-- TOUR GRIS (Conteneur) -->
         <div class="bg-[#18181B] rounded-3xl p-8 border border-[#27272A] max-w-5xl mx-auto shadow-xl">
             
             <!-- TopBar -->
-            <div class="flex justify-between items-center mb-10 border-b border-[#27272A] pb-6">
+            <div class="flex justify-between items-center mb-8 border-b border-[#27272A] pb-4">
                 <div>
-                    <h3 class="text-3xl font-bold tracking-tight">Notifications</h3>
-                    <p class="text-sm text-[#A1A1AA] mt-1">Suivi de vos demandes et activités</p>
+                    <h3 class="text-2xl font-bold tracking-tight">Réservations</h3>
+                    <p class="text-sm text-[#A1A1AA]">Planifiez vos répétitions et gérez votre matériel</p>
                 </div>
                 <div class="flex items-center space-x-3">
+                    <a href="notifications.php" class="w-9 h-9 bg-[#0B0B0F] border border-[#27272A] rounded-xl flex items-center justify-center text-sm hover:bg-[#27272A] transition">🔔</a>
                     <a href="profil.html" id="user-avatar-link" class="w-10 h-10 bg-[#A78BFA]/20 border border-[#A78BFA]/40 rounded-xl flex items-center justify-center text-[11px] font-bold text-[#A78BFA] hover:bg-[#A78BFA]/30 transition shadow-lg shadow-[#A78BFA]/5">
-                        <?= $initiales ?>
-                    </a> 
+                        --
+                    </a>
                 </div>
             </div>
 
-            <!-- LISTE DES NOTIFICATIONS (Style Image) -->
-            <div class="space-y-4">
-                <?php if (empty($notifications)): ?>
-                    <p class="text-center text-[#A1A1AA] py-10 italic">Aucune notification.</p>
-                <?php endif; ?>
+            <?php if ($message_success): ?>
+                <div class="mb-6 p-4 bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl text-sm"><?= $message_success ?></div>
+            <?php endif; ?>
 
-                <?php foreach ($notifications as $notif): 
-                    $style = getNotifStyle($notif['type_notification']);
-                ?>
-                    <div class="relative group bg-[#0B0B0F] border border-[#1f1f23] rounded-[24px] p-6 transition-all hover:border-[#27272A]">
-                        <div class="flex items-start gap-6">
-                            <!-- Point de couleur -->
-                            <div class="mt-2 w-2.5 h-2.5 rounded-full shrink-0 <?= $style['dot'] ?> shadow-[0_0_8px_rgba(0,0,0,0.5)]"></div>
-                            
-                            <!-- Contenu -->
-                            <div class="flex-1">
-                                <div class="flex justify-between items-start">
-                                    <h4 class="text-[15px] font-medium leading-relaxed max-w-[80%] text-[#F5F5F7]">
-                                        <?= htmlspecialchars($notif['message']) ?>
-                                    </h4>
-                                    <span class="text-[11px] text-[#52525B] font-medium">
-                                        <?= time_elapsed_string($notif['date_envoi']) ?>
-                                    </span>
-                                </div>
-                                
-                                <!-- Badge Rôle · Type -->
-                                <div class="mt-3 inline-flex items-center px-3 py-1 rounded-lg border text-[10px] font-bold tracking-wide uppercase <?= $style['badge'] ?>">
-                                    <?= $style['label'] ?>
-                                </div>
-                            </div>
+            <!-- Sélecteur de Date avec Navigation -->
+            <div class="relative mb-8 group">
+                <button onclick="scrollDates(-300)" class="absolute left-[-15px] top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-[#18181B] border border-[#27272A] rounded-full flex items-center justify-center text-[#A78BFA] shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[#27272A]">
+                    <i data-lucide="chevron-left"></i>
+                </button>
 
-                            <!-- Action supprimer au survol -->
-                            <form method="POST" class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <input type="hidden" name="action" value="delete">
-                                <input type="hidden" name="id_notif" value="<?= $notif['id_notification'] ?>">
-                                <button type="submit" class="p-1.5 text-[#52525B] hover:text-rose-500 transition">
-                                    <i data-lucide="x" class="w-4 h-4"></i>
-                                </button>
-                            </form>
+                <div id="date-scroll-container" class="flex gap-2 overflow-x-auto pb-2 no-scrollbar scroll-smooth">
+                    <?php foreach ($dates as $d): ?>
+                        <a href="?date=<?= $d['full'] ?>&tab=<?= $activeTab ?><?= $selectedResourceId ? '&id_ressource='.$selectedResourceId : '' ?>" 
+                           class="flex flex-col items-center px-4 py-3 rounded-xl border transition min-w-[75px] shrink-0 <?= ($selectedDate === $d['full'] ? 'bg-[#A78BFA] border-[#A78BFA] text-[#0B0B0F]' : 'bg-[#0B0B0F] border-[#27272A] text-[#A1A1AA] hover:border-[#A78BFA]/50') ?>">
+                            <span class="text-[10px] font-bold uppercase"><?= $d['dayName'] ?></span>
+                            <span class="text-lg font-bold"><?= $d['dayNum'] ?></span>
+                            <span class="text-[10px]"><?= $d['month'] ?></span>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+
+                <button onclick="scrollDates(300)" class="absolute right-[-15px] top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-[#18181B] border border-[#27272A] rounded-full flex items-center justify-center text-[#A78BFA] shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity hover:bg-[#27272A]">
+                    <i data-lucide="chevron-right"></i>
+                </button>
+            </div>
+
+            <!-- Onglets -->
+            <div class="flex gap-0 mb-8 border-b border-[#27272A]">
+                <a href="?date=<?= $selectedDate ?>&tab=salles" class="pb-2.5 px-5 text-sm font-bold <?= ($activeTab === 'salles' ? 'text-[#A78BFA] border-b-2 border-[#A78BFA]' : 'text-[#A1A1AA] hover:text-[#F5F5F7] transition') ?>">Salles</a>
+                <a href="?date=<?= $selectedDate ?>&tab=materiel" class="pb-2.5 px-5 text-sm font-bold <?= ($activeTab === 'materiel' ? 'text-[#A78BFA] border-b-2 border-[#A78BFA]' : 'text-[#A1A1AA] hover:text-[#F5F5F7] transition') ?>">Matériel</a>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
+                <!-- Liste des ressources -->
+                <div class="space-y-2">
+                    <?php foreach ($resources as $res): ?>
+                        <a href="?date=<?= $selectedDate ?>&tab=<?= $activeTab ?>&id_ressource=<?= $res['id_resource'] ?>" class="flex items-center gap-3 px-4 py-4 rounded-xl border transition-all <?= ($selectedResourceId == $res['id_resource'] ? 'border-[#A78BFA] bg-[#A78BFA]/10' : 'bg-[#0B0B0F] border-[#27272A] hover:border-[#A78BFA]/50 hover:bg-[#A78BFA]/5') ?>">
+                            <span class="text-xl"><?php echo getResourceIcon($res['nom'], $activeTab == 'salles' ? 'Studio' : 'Matériel'); ?></span>
+                            <p class="text-sm font-semibold truncate"><?= htmlspecialchars($res['nom']) ?></p>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+
+                <!-- Créneaux -->
+                <div class="bg-[#0B0B0F] border border-[#27272A] rounded-2xl p-6 h-fit">
+                    <?php if (!$selectedResourceId): ?>
+                        <p class="text-center text-[#A1A1AA] py-10 italic">Choisissez une ressource à gauche</p>
+                    <?php else: ?>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <?php foreach ($slots as $slot): 
+                                $time_start = substr($slot, 0, 5); 
+                                $is_taken = in_array($time_start, $unavailableSlots);
+                            ?>
+                                <div class="p-4 rounded-xl border border-[#27272A] transition-all <?= $is_taken 
+                                    ? 'opacity-40 bg-[#18181B] cursor-not-allowed' 
+                                    : 'bg-[#18181B] hover:border-[#A78BFA]/60 hover:bg-[#A78BFA]/5 cursor-pointer' ?>">
+                                    <div class="flex justify-between items-center">
+                                        <div>
+                                            <p class="text-sm font-bold"><?= $slot ?></p>
+                                            <p class="text-[10px] <?= $is_taken ? 'text-red-500' : 'text-[#A78BFA]' ?>"><?= $is_taken ? 'Occupé' : 'Libre' ?></p>
+                                        </div>
+                                        <?php if (!$is_taken): ?>
+                                            <form method="POST">
+                                                <input type="hidden" name="action" value="reserver">
+                                                <input type="hidden" name="id_ressource" value="<?= $selectedResourceId ?>">
+                                                <input type="hidden" name="selected_date" value="<?= $selectedDate ?>">
+                                                <input type="hidden" name="slot" value="<?= $slot ?>">
+                                                <button type="submit" class="text-xs bg-[#A78BFA] text-[#0B0B0F] px-4 py-2 rounded-lg font-bold hover:bg-white transition-colors">Réserver</button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
-                    </div>
-                <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
             </div>
         </div>
     </main>
 
-    <!-- Ton navigation.js existant s'occupe du sidebar-nav -->
     <script src="navigation.js"></script>
     <script>
         lucide.createIcons();
+
+        function scrollDates(amount) {
+            const container = document.getElementById('date-scroll-container');
+            container.scrollBy({ left: amount, behavior: 'smooth' });
+        }
+
+        // Auto-centrage de la date sélectionnée
+        window.addEventListener('load', () => {
+            const activeDate = document.querySelector('.bg-\\[\\#A78BFA\\]'); 
+            if (activeDate) {
+                const container = document.getElementById('date-scroll-container');
+                const offset = activeDate.offsetLeft - (container.offsetWidth / 2) + (activeDate.offsetWidth / 2);
+                container.scrollTo({ left: offset, behavior: 'auto' });
+            }
+        });
     </script>
 </body>
 </html>

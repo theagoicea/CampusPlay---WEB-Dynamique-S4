@@ -10,100 +10,94 @@ async function loadEvent() {
 
         if (event.error) { alert(event.error); return; }
 
-        // Remplissage simple
         document.getElementById('title').innerText = event.titre;
-        document.getElementById('description').innerText = event.description;
+        document.getElementById('description').innerText = event.description || "";
         document.getElementById('organizer').innerText = `${event.prenom_orga} ${event.nom_orga}`;
         document.getElementById('location').innerText = event.lieu;
         document.getElementById('type-badge').innerText = event.type_evenement;
 
-        // Gestion Dates et Heures
         const dD = new Date(event.date_debut.replace(' ', 'T'));
         const dF = new Date(event.date_fin.replace(' ', 'T'));
         document.getElementById('date').innerText = dD.toLocaleDateString('fr-FR', { 
             day: 'numeric', 
             month: 'long', 
-            year: 'numeric'  // <-- On ajoute l'année ici
+            year: 'numeric'
         });        
         document.getElementById('time').innerText = `${dD.getHours()}h${dD.getMinutes().toString().padStart(2, '0')} - ${dF.getHours()}h${dF.getMinutes().toString().padStart(2, '0')}`;
 
-        // Accès (Membres / Libre)
         const bAcc = document.getElementById('badge-access');
         bAcc.innerText = event.est_reserve_membres == 1 ? "MEMBRES UNIQUEMENT" : "OUVERT À TOUS";
         bAcc.className = event.est_reserve_membres == 1 ? "px-3 py-1 rounded-md bg-blue-500/10 text-blue-400 text-[10px] font-bold" : "px-3 py-1 rounded-md bg-green-500/10 text-green-400 text-[10px] font-bold";
 
-        // Validation (Oui / Non)
         const bVal = document.getElementById('badge-validation');
         bVal.innerText = event.besoin_validation_inscription == 1 ? "VALIDATION MANUELLE" : "AUTO-VALIDATION";
         bVal.className = "px-3 py-1 rounded-md bg-[#27272A] text-[#A1A1AA] text-[10px] font-bold";
 
-        // Places
         document.getElementById('restantes').innerText = event.places_restantes;
         document.getElementById('total').innerText = event.capacite_max;
         const ratio = (event.places_restantes / event.capacite_max) * 100;
         
-        // Affichage contenu et animation barre
         document.getElementById('loader').classList.add('hidden');
         document.getElementById('content').classList.remove('hidden');
         setTimeout(() => { document.getElementById('progress').style.width = ratio + "%"; }, 100);
 
-        if(event.places_restantes <= 0) {
-            const btn = document.getElementById('btn-action');
-            btn.innerText = "COMPLET";
-            btn.disabled = true;
-            btn.className = "px-10 py-4 bg-[#27272A] text-[#52525B] font-black rounded-2xl cursor-not-allowed";
+        // --- GESTION DU BOUTON (DEJA INSCRIT OU COMPLET) ---
+        const btnReserve = document.getElementById('btn-action');
+        if (event.est_inscrit) {
+            btnReserve.innerText = "DÉJÀ INSCRIT";
+            btnReserve.disabled = true;
+            btnReserve.className = "px-10 py-4 bg-green-500/10 border border-green-500/20 text-green-500 font-black rounded-2xl cursor-not-allowed";
+        } else if (event.places_restantes <= 0) {
+            btnReserve.innerText = "COMPLET";
+            btnReserve.disabled = true;
+            btnReserve.className = "px-10 py-4 bg-[#27272A] text-[#52525B] font-black rounded-2xl cursor-not-allowed";
         }
 
-        lucide.createIcons();
-    } catch (e) { console.error(e); }
+        if (window.lucide) lucide.createIcons();
 
+        // --- GESTION DU CLIC SUR RÉSERVER (Sans alert) ---
+        btnReserve.onclick = async () => {
+            btnReserve.disabled = true;
+            btnReserve.innerText = "Traitement...";
 
-    // --- GESTION DU CLIC SUR RÉSERVER ---
-    const btnReserve = document.getElementById('btn-action');
-    
-    btnReserve.onclick = async () => {
-        // Désactiver le bouton pour éviter les doubles clics
-        btnReserve.disabled = true;
-        btnReserve.innerText = "Traitement...";
+            const formData = new FormData();
+            formData.append('id_evenement', id);
 
-        const formData = new FormData();
-        formData.append('id_evenement', id);
+            try {
+                const response = await fetch('inscription_event.php', { method: 'POST', body: formData });
+                const result = await response.json();
 
-        try {
-            const response = await fetch('inscription_event.php', {
-                method: 'POST',
-                body: formData
-            });
-            const result = await response.json();
-
-            if (result.success) {
-                alert("Succès : " + result.message);
-                // On recharge la page pour mettre à jour les compteurs de places
-                window.location.reload();
-            } else {
-                alert("Erreur : " + result.error);
-                btnReserve.disabled = false;
-                btnReserve.innerText = "Réserver ma place";
+                if (result.success) {
+                    btnReserve.innerText = "Inscription validée !";
+                    btnReserve.className = "px-10 py-4 bg-green-500/10 border border-green-500/20 text-green-500 font-black rounded-2xl transition-all";
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    btnReserve.innerText = result.error;
+                    btnReserve.className = "px-10 py-4 bg-rose-500/10 border border-rose-500/20 text-rose-500 font-black rounded-2xl transition-all text-xs";
+                    setTimeout(() => {
+                        btnReserve.disabled = false;
+                        btnReserve.innerText = "Réserver ma place";
+                        btnReserve.className = "px-10 py-4 bg-[#A78BFA] text-[#0B0B0F] font-black rounded-2xl hover:scale-105 transition-all shadow-xl shadow-[#A78BFA]/10";
+                    }, 3000);
+                }
+            } catch (error) {
+                btnReserve.innerText = "Erreur serveur";
+                setTimeout(() => { btnReserve.disabled = false; btnReserve.innerText = "Réserver ma place"; }, 2000);
             }
-        } catch (error) {
-            console.error("Erreur réservation:", error);
-            btnReserve.disabled = false;
-        }
-    };
+        };
 
-
-    if (event.image_url) {
-        // Si tu as un élément img id="event-image" dans ton HTML
-        const imgElement = document.getElementById('event-image');
-        if (imgElement) imgElement.src = event.image_url;
-        
-        // Ou si tu veux mettre l'image en fond de bannière
-        const banner = document.getElementById('event-banner'); // la div de bannière
-        if (banner) {
-            banner.style.backgroundImage = `linear-gradient(to bottom, rgba(11,11,15,0.2), #0B0B0F), url('${event.image_url}')`;
-            banner.style.backgroundSize = 'cover';
-            banner.style.backgroundPosition = 'center';
+        // --- GESTION DE L'IMAGE DE BANNIÈRE ---
+        if (event.image_url && event.image_url !== "") {
+            const banner = document.getElementById('event-banner'); 
+            if (banner) {
+                banner.style.backgroundImage = `linear-gradient(to bottom, rgba(11,11,15,0.8), rgba(11,11,15,0.95)), url('uploads/${event.image_url}')`;
+                banner.style.backgroundSize = 'cover';
+                banner.style.backgroundPosition = 'center';
+            }
         }
+
+    } catch (e) { 
+        console.error(e); 
     }
 }
 

@@ -99,7 +99,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// ==========================================
 // REQUÊTES GET : CHARGEMENT DU SUJET
+// ==========================================
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $id_forum = $_GET['id'] ?? null;
     if (!$id_forum) {
