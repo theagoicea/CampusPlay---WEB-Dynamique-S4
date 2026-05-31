@@ -48,7 +48,7 @@ function displayEvents(events) {
         
         // Logique de l'image (Avec le dossier uploads/)
         const visualContent = (event.image_url && event.image_url !== "") 
-            ? `<img src="uploads/${event.image_url}" alt="${event.titre}" class="w-full h-full object-cover" onerror="this.outerHTML='<div class=&quot;text-5xl group-hover:scale-110 transition-transform&quot;>${emoji}</div>'">`
+            ? `<img src="${event.image_url}" alt="${event.titre}" class="w-full h-full object-cover" onerror="this.outerHTML='<div class=&quot;text-5xl group-hover:scale-110 transition-transform&quot;>${emoji}</div>'">`
             : `<div class="text-5xl group-hover:scale-110 transition-transform">${emoji}</div>`;
 
         return `

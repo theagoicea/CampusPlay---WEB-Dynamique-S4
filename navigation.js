@@ -52,7 +52,7 @@ async function loadSidebar() {
         
         // Si c'est un ADMIN : Accès au Dashboard complet
         if (user.role === 'Admin') {
-            menuItems.push({ name: 'Dashboard Admin', icon: 'layout-grid', url: 'admin.php' });
+            menuItems.push({ name: 'Tableau Bord Admin', icon: 'layout-grid', url: 'admin.php' });
         } 
         // Si c'est un ORGANISATEUR : Accès uniquement à la gestion de ses inscriptions
         else if (user.role === 'Organisateur') {
