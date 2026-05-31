@@ -2,7 +2,7 @@
 session_start();
 header('Content-Type: application/json');
 
-require_once 'configuration.php'; // On utilise ton fichier centralisé
+require_once 'configuration.php'; 
 
 try {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
